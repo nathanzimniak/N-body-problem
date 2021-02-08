@@ -1,1 +1,0 @@
-Three body problem restricted
