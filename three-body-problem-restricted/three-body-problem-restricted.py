@@ -124,7 +124,7 @@ def RK4(f, Y0, T):
         # Ajout des nouvelles valeurs de positions et de vitesses à la liste
         Y[k,:] = Y[k-1] + (k1+2*k2+2*k3+k4)/6
     return Y
-print(len(T))
+
 Y = RK4(TroisCorps, Y0, T)  # Création du tableau des solutions
 x, y, vx, vy = Y.T          # Attribution d'une ligne de la transposée du tableau Y à chaque variable du système pour la lecture des solutions
 
