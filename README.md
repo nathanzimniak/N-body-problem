@@ -4,6 +4,10 @@
 
 Un programme codé en Python pour calculer les trajectoires de trois corps soumis à l'attraction gravitationnelle.
 
+### Aperçu
+
+En constrution
+
 ### Théorie
 
 En construction
