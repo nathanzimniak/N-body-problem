@@ -7,7 +7,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 
 
-## RÉSOLUTION DU PROBLÈME À TROIS CORPS PAR MÉTHODE RK4
+## THREE BODY PROBLEM SOLVER / RUNGE-KUTTA 4 METHOD
 
 
 
