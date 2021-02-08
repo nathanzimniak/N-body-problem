@@ -1,1 +1,1 @@
-# three-body-problem
+Three body problem
