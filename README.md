@@ -6,7 +6,7 @@ Un programme codé en Python pour calculer les trajectoires de trois corps uniqu
 
 ### Aperçu
 
-En constrution
+En construction
 
 ### Théorie
 
