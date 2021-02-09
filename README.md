@@ -6,7 +6,11 @@ Un programme codé en Python pour calculer les trajectoires de trois corps uniqu
 
 ### Aperçu
 
+<div align="center">
+
 <img src="/resources/problème-à-trois-corps-général.gif" width="380" height="308"/>
+
+</div>
 
 ### Théorie
 
