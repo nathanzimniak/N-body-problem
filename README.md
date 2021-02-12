@@ -20,6 +20,6 @@ En construction
 
 ### Bibliographie
 
-- **Wikipédia** - Three body problem, 2015. https://www-fourier.ujf-grenoble.fr/~faure/enseignement/projets_simulation/pb_trois_corsp_restreint/pb_trois_corps.xhtml
+- **Wikipédia** - Three body problem, 2015. https://en.wikipedia.org/wiki/Three-body_problem
 
 - **F. Faure** - Le problème à trois corps restreint, 2018. https://www-fourier.ujf-grenoble.fr/~faure/enseignement/projets_simulation/pb_trois_corsp_restreint/pb_trois_corps.xhtml
