@@ -11,7 +11,7 @@ Un programme codé en Python pour calculer les trajectoires de trois corps uniqu
 </div>
 
 <div align="center">
-  *Problème à trois corps général*                                                *Problème à trois corps restreint*
+  _Problème à trois corps général_                                                _Problème à trois corps restreint_
 </div>
 
 ### Théorie
