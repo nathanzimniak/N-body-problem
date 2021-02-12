@@ -4,8 +4,6 @@
 
 Un programme codé en Python pour calculer les trajectoires de trois corps uniquement soumis à leur interaction gravitationnelle en fonction de leurs masses, leurs positions et vitesses initiales.
 
-It's very easy to make some words **bold** and other words *test* with Markdown. You can even [link to Google!](http://google.com)
-
 ### Aperçu
 
 <div align="center">
