@@ -7,9 +7,11 @@ Un programme codé en Python pour calculer les trajectoires de trois corps uniqu
 ### Aperçu
 
 <div align="center">
+  <img src="/resources/problème-à-trois-corps-général.gif" width="380" height="308"/> <img src="/resources/problème-à-trois-corps-restreint.gif" width="410" height="308"/>
+</div>
 
-<img src="/resources/problème-à-trois-corps-général.gif" width="380" height="308"/> <img src="/resources/problème-à-trois-corps-restreint.gif" width="410" height="308"/>
-
+<div align="center">
+  Trois corps général Trois corps restreint
 </div>
 
 ### Théorie
