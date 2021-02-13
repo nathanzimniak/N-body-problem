@@ -1,6 +1,6 @@
 ## Résolution numérique du problème à trois corps
 
-![](https://img.shields.io/badge/Language-Python-blue.png) ![](https://img.shields.io/badge/Version-finale-success.png)
+![](https://img.shields.io/badge/Language-Python-blue.png) ![](https://img.shields.io/badge/Version-Finale-success.png)
 
 Un programme codé en Python pour calculer les trajectoires de trois corps uniquement soumis à leur interaction gravitationnelle en fonction de leurs masses, leurs positions et vitesses initiales.
 
