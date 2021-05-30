@@ -16,7 +16,7 @@ Un programme codé en Python pour calculer les trajectoires de trois corps uniqu
 
 ### Théorie
 
-*Pour le problème à trois corps restreint, voir le compte-rendu [ici](https://github.com/nathanzimniak/three-body-problem/compte-rendu-restreint.pdf).*
+*Pour le problème à trois corps restreint, voir le compte-rendu [ici](https://github.com/nathanzimniak/three-body-problem/blob/main/compte-rendu-restreint.pdf).*
 
 En construction
 
