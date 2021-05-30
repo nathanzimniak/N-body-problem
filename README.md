@@ -2,7 +2,7 @@
 
 ![](https://img.shields.io/badge/Language-Python-blue.png) ![](https://img.shields.io/badge/Version-Finale-success.png)
 
-Un programme codé en Python pour calculer les trajectoires de trois corps uniquement soumis à leur interaction gravitationnelle en fonction de leurs masses, leurs positions et vitesses initiales. Codé avec mon ami Valentin ROLLO.
+Un programme codé en Python pour calculer les trajectoires de trois corps uniquement soumis à leur interaction gravitationnelle en fonction de leurs masses, leurs positions et vitesses initiales. Codé avec mon ami Valentin Rollo.
 
 ### Aperçu
 
