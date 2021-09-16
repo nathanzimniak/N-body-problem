@@ -1,8 +1,8 @@
 ## Résolution numérique du problème à trois corps
 
-![](https://img.shields.io/badge/Language-Python-blue.png) ![](https://img.shields.io/badge/Version-Finale-success.png)
+![](https://img.shields.io/badge/Language-Python-blue.png)
 
-Un programme codé en Python pour calculer les trajectoires de trois corps uniquement soumis à leur interaction gravitationnelle en fonction de leurs masses, leurs positions et vitesses initiales. Codé avec mon ami Valentin Rollo.
+Un programme codé en Python pour résoudre le problème à 3 corps. Codé avec mon ami Valentin Rollo.
 
 ### Aperçu
 
