@@ -18,10 +18,4 @@ Un programme codé en Python pour calculer les trajectoires de trois corps uniqu
 
 *Pour le problème à trois corps restreint, voir le compte-rendu [ici](https://github.com/nathanzimniak/three-body-problem/blob/main/compte-rendu-restreint.pdf).*
 
-En construction
-
-### Bibliographie
-
-F. Faure. *Le problème à trois corps restreint*. 2018.
-
-S. Rondi. *Le problème à 3 corps restreint*. 2002.
+*En construction*
