@@ -1,8 +1,8 @@
-## Résolution numérique du problème à trois corps
+## Résolution numérique du problème à N corps
 
 ![](https://img.shields.io/badge/Language-Python-blue.png)
 
-Un programme codé en Python pour résoudre le problème à 3 corps. Codé avec mon ami Valentin Rollo.
+Un programme codé en Python pour résoudre le problème à N corps.
 
 ### Aperçu
 
@@ -15,7 +15,5 @@ Un programme codé en Python pour résoudre le problème à 3 corps. Codé avec 
 </div>
 
 ### Théorie
-
-*Pour le problème à trois corps restreint, voir le compte-rendu [ici](https://github.com/nathanzimniak/three-body-problem/blob/main/compte-rendu-restreint.pdf).*
 
 *En construction*
