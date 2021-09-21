@@ -10,7 +10,3 @@ Un programme codé en Python pour résoudre le problème à N corps.
   <img src="resources//2D_N_Body_Problem.gif"  width="400" />
   <img src="resources//3D_N_Body_Problem.gif"  width="400" />
 </p>
-
-### Théorie
-
-*En construction*
