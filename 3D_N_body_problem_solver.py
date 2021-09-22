@@ -41,9 +41,9 @@ Y0 = np.append(R0,V0)                               #Conditions initiales
 def NCorps(Yk, t):
     ''' Calcule la liste contenant les fonctions à intégrer (vitesses et accélérations)
         ----------
-        :param Yk: liste, liste des fonctions à intégrer à la k-ième itération
+        :param Yk: liste, liste des positions et des vitesses à la k-ième itération
         :param t: liste, liste des temps
-        :return Sk: liste, liste des fonctions à intégrer
+        :return Sk: liste, liste des fonctions à intégrer (vitesses et accélérations) pour calculer les positions et les vitesses à la k+1-ième itération
         ----------
     '''
     #Place les positions dans un tableau 2D pour plus de praticité
