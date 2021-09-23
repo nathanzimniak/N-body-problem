@@ -2,7 +2,7 @@
 
 ![](https://img.shields.io/badge/Language-Python-blue.png)
 
-Un programme codé en Python pour résoudre le problème à N corps.
+Un programme codé en Python pour résoudre le problème à N corps à 3 dimensions.
 
 ### Aperçu
 
