@@ -1,18 +1,13 @@
-from bodies import System
 import math
 
-def compute_accelerations(system, G):
+def compute_accelerations(positions, masses, G):
     """
     Compute the gravitational accelerations acting on each body
     in an N-body system, using Newton's law.
     """
-    # Extract masses and positions from the system
-    bodies    = system.bodies          # [body1, body2, ...]
-    masses    = system.get_masses()    # [m1, m2, ...]
-    positions = system.get_positions() # [[x1, y1], [x2, y2], ...]
 
     # Number of bodies in the system
-    N_bodies = len(bodies)
+    N_bodies = len(positions)
 
     # Initialize the acceleration vectors for all bodies
     accelerations = [[0.0, 0.0] for _ in range(N_bodies)] # [[ax1, ay1], [ax2, ay2], ...]
