@@ -1,13 +1,100 @@
 from bodies import Body, System
-from accelerations import compute_accelerations
+from integrator import euler
+from rhs import compute_dudt
 
+# Constants
 G = 1.0
 
-body1 = Body(1.0, [0, 0], [0, 1])
-body2 = Body(1.0, [1, 0], [0, -1])
+# Input parameters
+N_bodies = 2
+t_ini, t_end, N_steps = 0.0, 10.0, 1000
+masses     = [10.0, 1.0]               # [m1, ..., mN]
+positions  = [[0.0, 0.0], [1.0, 1.0]]  # [[x1, y1], ..., [xN, yN]]
+velocities = [[0.0, 0.0], [-1.0, 1.0]] # [[vx1, vy1], ..., [vxN, vyN]]
 
-system = System([body1, body2])
+# Create the initial system state
+bodies = [Body(masses[i], positions[i], velocities[i]) for i in range(N_bodies)]
+system = System(bodies)
 
-accelerations = compute_accelerations(system, G)
+# Calcul des paramètres temporels
+t = t_ini
+dt = (t_end - t_ini)/N_steps
 
-print(accelerations)
+# Création du vecteur d'état u = [x1, y1, vx1, vy1, ..., xN, yN, vxN, vyN]
+u = [component for body in bodies for component in (body.position + body.velocity)]
+
+# Création du vecteur des masses m = [m1, ..., mN]
+m = [body.mass for body in bodies]
+
+# Initialisation des listes contenant les trajectoires des corps
+traj_x = [[u[4*i]]     for i in range(N_bodies)]
+traj_y = [[u[4*i + 1]] for i in range(N_bodies)]
+
+for step in range(N_steps):
+    # Calcul des dérivées (rhs)
+    dudt = compute_dudt(t, u, m, G)
+
+    # Intégration en t+dt
+    u = euler(u, dudt, dt)
+
+    # Extraction des positions [[x1, y1], ..., [xN, yN]] et vitesses [[vx1, vy1], ..., [vxN, vyN]] à partir de u
+    positions  = [u[4*i : 4*i+2] for i in range(N_bodies)]
+    velocities = [u[4*i+2 : 4*i+4] for i in range(N_bodies)]
+
+    # Mise à jour de chaque corps contenu dans le système
+    for i, body in enumerate(system.bodies):
+        body.position = positions[i]
+        body.velocity = velocities[i]
+
+    # Incrémentation du temps
+    t += dt
+
+    for i, (x, y) in enumerate(positions):
+        traj_x[i].append(x)
+        traj_y[i].append(y)
+
+
+
+
+
+
+# ----- Animation avec Matplotlib -----
+from matplotlib.animation import FuncAnimation
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots()
+ax.set_aspect("equal", "box")
+
+# Déterminer les limites du graphe
+all_x = [x for xs in traj_x for x in xs]
+all_y = [y for ys in traj_y for y in ys]
+margin = 0.2
+xmin, xmax = -10, 10
+ymin, ymax = -10, 10
+ax.set_xlim(xmin, xmax)
+ax.set_ylim(ymin, ymax)
+
+# Un point (Line2D) par corps
+points = [ax.plot([], [], "o")[0] for _ in range(N_bodies)]
+
+def init():
+    for p in points:
+        p.set_data([], [])
+    return points
+
+def update(frame):
+    for i, p in enumerate(points):
+        # IMPORTANT : mettre des listes, pas des scalaires
+        p.set_data([traj_x[i][frame]], [traj_y[i][frame]])
+    return points
+
+ani = FuncAnimation(
+    fig,
+    update,
+    frames=len(traj_x[0]),
+    init_func=init,
+    interval=20,
+    blit=True
+)
+
+plt.show()

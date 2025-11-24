@@ -17,7 +17,6 @@ class Body:
         self.velocity = velocity
 
 
-
 class System:
     """
     Représente un ensemble de corps.
