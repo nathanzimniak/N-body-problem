@@ -3,11 +3,11 @@ from integrator import euler
 from rhs import compute_dudt
 
 # Constants
-G = 1.0
+G = 4*pi**2
 
 # Input parameters
-N_bodies = 2
 t_ini, t_end, N_steps = 0.0, 10.0, 1000
+N_bodies = 2
 masses     = [10.0, 1.0]               # [m1, ..., mN]
 positions  = [[0.0, 0.0], [1.0, 1.0]]  # [[x1, y1], ..., [xN, yN]]
 velocities = [[0.0, 0.0], [-1.0, 1.0]] # [[vx1, vy1], ..., [vxN, vyN]]
