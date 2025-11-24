@@ -1,11 +1,5 @@
 
 
-#def euler():
-#
-#    vx_new = vx + ax * dt
-#    vy_new = vy + ay * dt
-#
-#    x_new = x + vx * dt
-#    y_new = y + vy * dt
-#
-#    return dydx1, dydx2
+def euler(u, dudt, dt):
+    u_new = [ui + dudi*dt for ui, dudi in zip(u, dudt)]
+    return u_new

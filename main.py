@@ -1,69 +1,45 @@
 from bodies import Body, System
-from accelerations import compute_accelerations
+from integrator import euler
+from rhs import compute_dudt
 
-def compute_dfdt(t, f, m, G):
-    # Nombre de corps
-    N_bodies = len(m)
-
-    # Extraction des positions [[x1, y1], ..., [xN, yN]] et vitesses [[vx1, vy1], ..., [vxN, vyN]] à partir de f
-    positions  = [f[4*i : 4*i+2] for i in range(N_bodies)]
-    velocities = [f[4*i+2 : 4*i+4] for i in range(N_bodies)]
-
-    # Calcul des accélérations [[ax1, ay1], ..., [axN, ayN]]
-    accelerations = compute_accelerations(positions, m, G)
-
-    # Construction de l'état à intégrer [vx1, vy1, ax1, ay1, ..., vxN, vyN, axN, ayN]
-    dfdt = [component for body in range(N_bodies) for component in (velocities[body] + accelerations[body])]
-    return dfdt
-
-
-def euler(f, dfdt, dt):
-    f_new = [fi + dfi*dt for fi, dfi in zip(f, dfdt)]
-    return f_new
-
-
-
-
+# Constants
 G = 1.0
 
 # Input parameters
 N_bodies = 2
-t_ini, t_end, N_steps = [0.0, 10.0, 1000]
-m1, x1, y1, vx1, vy1 = [10.0, 0.0, 0.0, 0.0, 1.0]
-m2, x2, y2, vx2, vy2 = [1.0, 1.0, 0.0, 0.0, -1.0]
+t_ini, t_end, N_steps = 0.0, 10.0, 1000
+masses     = [10.0, 1.0]               # [m1, ..., mN]
+positions  = [[0.0, 0.0], [1.0, 1.0]]  # [[x1, y1], ..., [xN, yN]]
+velocities = [[0.0, 0.0], [-1.0, 1.0]] # [[vx1, vy1], ..., [vxN, vyN]]
 
 # Create the initial system state
-body1  = Body(m1, [x1, y1], [vx1, vy1])
-body2  = Body(m2, [x2, y2], [vx2, vy2])
-system = System([body1, body2])
-
-# Récupération de tous les corps bodies = [body1, ..., body_N]
-bodies = system.bodies
+bodies = [Body(masses[i], positions[i], velocities[i]) for i in range(N_bodies)]
+system = System(bodies)
 
 # Calcul des paramètres temporels
 t = t_ini
 dt = (t_end - t_ini)/N_steps
 
-# Création du vecteur d'état f = [x1, y1, vx1, vy1, ..., xN, yN, vxN, vyN]
-f = [component for body in bodies for component in (body.position + body.velocity)]
+# Création du vecteur d'état u = [x1, y1, vx1, vy1, ..., xN, yN, vxN, vyN]
+u = [component for body in bodies for component in (body.position + body.velocity)]
 
 # Création du vecteur des masses m = [m1, ..., mN]
 m = [body.mass for body in bodies]
 
 # Initialisation des listes contenant les trajectoires des corps
-traj_x = [[f[4*i]]     for i in range(N_bodies)]
-traj_y = [[f[4*i + 1]] for i in range(N_bodies)]
+traj_x = [[u[4*i]]     for i in range(N_bodies)]
+traj_y = [[u[4*i + 1]] for i in range(N_bodies)]
 
 for step in range(N_steps):
     # Calcul des dérivées (rhs)
-    dfdt = compute_dfdt(t, f, m, G)
+    dudt = compute_dudt(t, u, m, G)
 
     # Intégration en t+dt
-    f = euler(f, dfdt, dt)
+    u = euler(u, dudt, dt)
 
-    # Extraction des positions [[x1, y1], ..., [xN, yN]] et vitesses [[vx1, vy1], ..., [vxN, vyN]] à partir de f
-    positions  = [f[4*i : 4*i+2] for i in range(N_bodies)]
-    velocities = [f[4*i+2 : 4*i+4] for i in range(N_bodies)]
+    # Extraction des positions [[x1, y1], ..., [xN, yN]] et vitesses [[vx1, vy1], ..., [vxN, vyN]] à partir de u
+    positions  = [u[4*i : 4*i+2] for i in range(N_bodies)]
+    velocities = [u[4*i+2 : 4*i+4] for i in range(N_bodies)]
 
     # Mise à jour de chaque corps contenu dans le système
     for i, body in enumerate(system.bodies):
@@ -122,59 +98,3 @@ ani = FuncAnimation(
 )
 
 plt.show()
-
-
-
-
-
-
-
-## Input parameters
-#t_end = 10
-#N_steps = 100
-#m1, x1, y1, vx1, vy1 = [1.0, 0.0, 0.0, 0.0, 1.0]
-#m2, x2, y2, vx2, vy2 = [1.0, 1.0, 0.0, 0.0, -1.0]
-#
-## Initial states
-#Y0 = [x1, y1, vx1, vy1, x2, y2, vx2, vy2]
-#M0 = [m1, m2]
-#
-## Temps d'intégration
-#T = np.linspace(0, t_end, N_steps)
-#
-#def rhs(Y, t, M, G):
-#    """
-#    Right-hand side of the ODE system for 2 bodies:
-#    Y = [x1, y1, vx1, vy1, x2, y2, vx2, vy2]
-#    dY/dt = [vx1, vy1, ax1, ay1, vx2, vy2, ax2, ay2]
-#    """
-#
-#    # Unpack state vector and create bodies
-#    x1, y1, vx1, vy1, x2, y2, vx2, vy2 = Y
-#    m1, m2 = M
-#
-#    # Create the current system state
-#    b1 = Body(m1, [x1, y1], [vx1, vy1])
-#    b2 = Body(m2, [x2, y2], [vx2, vy2])
-#
-#    # Create the current system state
-#    system = System([b1, b2])
-#
-#    # Compute accelerations with current system state
-#    accelerations = compute_accelerations(system, G)
-#    ax1, ay1 = accelerations[0]
-#    ax2, ay2 = accelerations[1]
-#
-#    # Build dY/dt
-#    dydt1 = vx1 # dx1/dt
-#    dydt2 = vy1 # dy1/dt
-#    dydt3 = ax1 # dvx1/dt
-#    dydt4 = ay1 # dvy1/dt
-#    dydt5 = vx2 # dx2/dt
-#    dydt6 = vy2 # dy2/dt
-#    dydt7 = ax2 # dvx2/dt
-#    dydt8 = ay2 # dvy2/dt
-#    dYdt = [dydt1, dydt2, dydt3, dydt4, dydt5, dydt6, dydt7, dydt8]
-#    return dYdt
-#
-#solution = odeint(rhs, Y0, T, args=(M0, G))
