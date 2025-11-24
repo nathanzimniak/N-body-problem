@@ -1,44 +1,25 @@
 from bodies import Body, System
 from accelerations import compute_accelerations
 
-
-
 def compute_dfdt(t, f, m, G):
-    # Unpack state vector
-    x1, y1, vx1, vy1, x2, y2, vx2, vy2 = f
+    # Nombre de corps
+    N_bodies = len(m)
 
-    # Compute accelerations with current system state
-    positions = [[x1, y1], [x2, y2]]
+    # Extraction des positions [[x1, y1], ..., [xN, yN]] et vitesses [[vx1, vy1], ..., [vxN, vyN]] à partir de f
+    positions  = [f[4*i : 4*i+2] for i in range(N_bodies)]
+    velocities = [f[4*i+2 : 4*i+4] for i in range(N_bodies)]
+
+    # Calcul des accélérations [[ax1, ay1], ..., [axN, ayN]]
     accelerations = compute_accelerations(positions, m, G)
-    ax1, ay1 = accelerations[0]
-    ax2, ay2 = accelerations[1]
 
-    # Build dfdt
-    dfdt1 = vx1  # dx1/dt
-    dfdt2 = vy1  # dy1/dt
-    dfdt3 = ax1  # dvx1/dt
-    dfdt4 = ay1  # dvy1/dt
-    dfdt5 = vx2  # dx2/dt
-    dfdt6 = vy2  # dy2/dt
-    dfdt7 = ax2  # dvx2/dt
-    dfdt8 = ay2  # dvy2/dt
-    dfdt = [dfdt1, dfdt2, dfdt3, dfdt4, dfdt5, dfdt6, dfdt7, dfdt8]
+    # Construction de l'état à intégrer [vx1, vy1, ax1, ay1, ..., vxN, vyN, axN, ayN]
+    dfdt = [component for body in range(N_bodies) for component in (velocities[body] + accelerations[body])]
     return dfdt
 
-def euler(f, dfdt, dt):
-    f1, f2, f3, f4, f5, f6, f7, f8 = f
-    dfdt1, dfdt2, dfdt3, dfdt4, dfdt5, dfdt6, dfdt7, dfdt8 = dfdt
 
-    f1 = f1 + dfdt1 * dt
-    f2 = f2 + dfdt2 * dt
-    f3 = f3 + dfdt3 * dt
-    f4 = f4 + dfdt4 * dt
-    f5 = f5 + dfdt5 * dt
-    f6 = f6 + dfdt6 * dt
-    f7 = f7 + dfdt7 * dt
-    f8 = f8 + dfdt8 * dt
-    f = [f1, f2, f3, f4, f5, f6, f7, f8]
-    return f
+def euler(f, dfdt, dt):
+    f_new = [fi + dfi*dt for fi, dfi in zip(f, dfdt)]
+    return f_new
 
 
 
@@ -46,39 +27,101 @@ def euler(f, dfdt, dt):
 G = 1.0
 
 # Input parameters
+N_bodies = 2
 t_ini, t_end, N_steps = [0.0, 10.0, 1000]
-m1, x1, y1, vx1, vy1 = [1.0, 0.0, 0.0, 0.0, 1.0]
+m1, x1, y1, vx1, vy1 = [10.0, 0.0, 0.0, 0.0, 1.0]
 m2, x2, y2, vx2, vy2 = [1.0, 1.0, 0.0, 0.0, -1.0]
 
 # Create the initial system state
-body1 = Body(m1, [x1, y1], [vx1, vy1])
-body2 = Body(m2, [x2, y2], [vx2, vy2])
+body1  = Body(m1, [x1, y1], [vx1, vy1])
+body2  = Body(m2, [x2, y2], [vx2, vy2])
 system = System([body1, body2])
 
+# Récupération de tous les corps bodies = [body1, ..., body_N]
+bodies = system.bodies
+
+# Calcul des paramètres temporels
 t = t_ini
 dt = (t_end - t_ini)/N_steps
 
-# États actuels
-f = [x1, y1, vx1, vy1, x2, y2, vx2, vy2]
-m = [m1, m2]
+# Création du vecteur d'état f = [x1, y1, vx1, vy1, ..., xN, yN, vxN, vyN]
+f = [component for body in bodies for component in (body.position + body.velocity)]
+
+# Création du vecteur des masses m = [m1, ..., mN]
+m = [body.mass for body in bodies]
+
+# Initialisation des listes contenant les trajectoires des corps
+traj_x = [[f[4*i]]     for i in range(N_bodies)]
+traj_y = [[f[4*i + 1]] for i in range(N_bodies)]
 
 for step in range(N_steps):
-
     # Calcul des dérivées (rhs)
     dfdt = compute_dfdt(t, f, m, G)
 
-    # Intégration
+    # Intégration en t+dt
     f = euler(f, dfdt, dt)
-    x1, y1, vx1, vy1, x2, y2, vx2, vy2 = f
 
-    # Mise à jour des positions et vitesses des corps
-    body1.position = [x1, y1]
-    body1.velocity = [vx1, vy1]
-    body2.position = [x2, y2]
-    body2.velocity = [vx2, vy2]
+    # Extraction des positions [[x1, y1], ..., [xN, yN]] et vitesses [[vx1, vy1], ..., [vxN, vyN]] à partir de f
+    positions  = [f[4*i : 4*i+2] for i in range(N_bodies)]
+    velocities = [f[4*i+2 : 4*i+4] for i in range(N_bodies)]
+
+    # Mise à jour de chaque corps contenu dans le système
+    for i, body in enumerate(system.bodies):
+        body.position = positions[i]
+        body.velocity = velocities[i]
 
     # Incrémentation du temps
     t += dt
+
+    for i, (x, y) in enumerate(positions):
+        traj_x[i].append(x)
+        traj_y[i].append(y)
+
+
+
+
+
+
+# ----- Animation avec Matplotlib -----
+from matplotlib.animation import FuncAnimation
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots()
+ax.set_aspect("equal", "box")
+
+# Déterminer les limites du graphe
+all_x = [x for xs in traj_x for x in xs]
+all_y = [y for ys in traj_y for y in ys]
+margin = 0.2
+xmin, xmax = -10, 10
+ymin, ymax = -10, 10
+ax.set_xlim(xmin, xmax)
+ax.set_ylim(ymin, ymax)
+
+# Un point (Line2D) par corps
+points = [ax.plot([], [], "o")[0] for _ in range(N_bodies)]
+
+def init():
+    for p in points:
+        p.set_data([], [])
+    return points
+
+def update(frame):
+    for i, p in enumerate(points):
+        # IMPORTANT : mettre des listes, pas des scalaires
+        p.set_data([traj_x[i][frame]], [traj_y[i][frame]])
+    return points
+
+ani = FuncAnimation(
+    fig,
+    update,
+    frames=len(traj_x[0]),
+    init_func=init,
+    interval=20,
+    blit=True
+)
+
+plt.show()
 
 
 
