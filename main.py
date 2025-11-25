@@ -1,5 +1,5 @@
 from bodies import Body, System
-from integrator import euler
+from integrator import euler, rk4
 from rhs import compute_dudt
 import math
 
