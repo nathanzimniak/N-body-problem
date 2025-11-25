@@ -8,7 +8,7 @@ from init import load_preset
 G = 4*math.pi**2
 
 # Input parameters
-config = load_preset("earth_sun")
+config = load_preset("solar_system")
 
 # Récupération
 t_ini   = config["t_ini"]
