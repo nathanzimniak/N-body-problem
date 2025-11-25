@@ -9,8 +9,8 @@ G = 4*math.pi**2
 # Input parameters
 t_ini, t_end, N_steps = 0.0, 10.0, 5000
 N_bodies = 2
-masses     = [1.0, 1.0]               # [m1, ..., mN]
-positions  = [[0.0, 0.0], [1.0, 1.0]]  # [[x1, y1], ..., [xN, yN]]
+masses     = [1.0, 1.0]                 # [m1, ..., mN]
+positions  = [[0.0, 0.0], [1.0, 1.0]]   # [[x1, y1], ..., [xN, yN]]
 velocities = [[1.0, 10.0], [-1.0, 1.0]] # [[vx1, vy1], ..., [vxN, vyN]]
 
 # Create the initial system state
