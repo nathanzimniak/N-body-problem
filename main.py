@@ -1,16 +1,17 @@
 from bodies import Body, System
 from integrator import euler
 from rhs import compute_dudt
+import math
 
 # Constants
-G = 4*pi**2
+G = 4*math.pi**2
 
 # Input parameters
-t_ini, t_end, N_steps = 0.0, 10.0, 1000
+t_ini, t_end, N_steps = 0.0, 10.0, 5000
 N_bodies = 2
-masses     = [10.0, 1.0]               # [m1, ..., mN]
+masses     = [1.0, 1.0]               # [m1, ..., mN]
 positions  = [[0.0, 0.0], [1.0, 1.0]]  # [[x1, y1], ..., [xN, yN]]
-velocities = [[0.0, 0.0], [-1.0, 1.0]] # [[vx1, vy1], ..., [vxN, vyN]]
+velocities = [[1.0, 10.0], [-1.0, 1.0]] # [[vx1, vy1], ..., [vxN, vyN]]
 
 # Create the initial system state
 bodies = [Body(masses[i], positions[i], velocities[i]) for i in range(N_bodies)]
@@ -31,11 +32,9 @@ traj_x = [[u[4*i]]     for i in range(N_bodies)]
 traj_y = [[u[4*i + 1]] for i in range(N_bodies)]
 
 for step in range(N_steps):
-    # Calcul des dérivées (rhs)
-    dudt = compute_dudt(t, u, m, G)
 
     # Intégration en t+dt
-    u = euler(u, dudt, dt)
+    u = euler(t, u, dt, compute_dudt, m, G)
 
     # Extraction des positions [[x1, y1], ..., [xN, yN]] et vitesses [[vx1, vy1], ..., [vxN, vyN]] à partir de u
     positions  = [u[4*i : 4*i+2] for i in range(N_bodies)]
