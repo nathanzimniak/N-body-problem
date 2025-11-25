@@ -34,7 +34,7 @@ traj_y = [[u[4*i + 1]] for i in range(N_bodies)]
 for step in range(N_steps):
 
     # Intégration en t+dt
-    u = euler(t, u, dt, compute_dudt, m, G)
+    u = rk4(t, u, dt, compute_dudt, m, G)
 
     # Extraction des positions [[x1, y1], ..., [xN, yN]] et vitesses [[vx1, vy1], ..., [vxN, vyN]] à partir de u
     positions  = [u[4*i : 4*i+2] for i in range(N_bodies)]
