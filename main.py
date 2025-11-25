@@ -1,19 +1,31 @@
+import math
 from bodies import Body, System
 from integrator import euler, rk4
 from rhs import compute_dudt
-import math
+from init import load_preset
 
 # Constants
 G = 4*math.pi**2
 
 # Input parameters
-t_ini, t_end, N_steps = 0.0, 10.0, 5000
-N_bodies = 2
-masses     = [1.0, 1.0]                 # [m1, ..., mN]
-positions  = [[0.0, 0.0], [1.0, 1.0]]   # [[x1, y1], ..., [xN, yN]]
-velocities = [[1.0, 10.0], [-1.0, 1.0]] # [[vx1, vy1], ..., [vxN, vyN]]
+config = load_preset("default")
+
+# Récupération
+t_ini   = config["t_ini"]
+t_end   = config["t_end"]
+N_steps = config["N_steps"]
+masses     = config["masses"]     # [m1, ..., mN]
+positions  = config["positions"]  # [[x1, y1], ..., [xN, yN]]
+velocities = config["velocities"] # [[vx1, vy1], ..., [vxN, vyN]]
+
+#t_ini, t_end, N_steps = 0.0, 10.0, 5000
+#N_bodies = 2
+#masses     = [1.0, 1.0]                 # [m1, ..., mN]
+#positions  = [[0.0, 0.0], [1.0, 1.0]]   # [[x1, y1], ..., [xN, yN]]
+#velocities = [[1.0, 10.0], [-1.0, 1.0]] # [[vx1, vy1], ..., [vxN, vyN]]
 
 # Create the initial system state
+N_bodies = len(masses)
 bodies = [Body(masses[i], positions[i], velocities[i]) for i in range(N_bodies)]
 system = System(bodies)
 
