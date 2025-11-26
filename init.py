@@ -1,6 +1,5 @@
 import math
 
-
 def earth_sun():
     t_ini   = 0.0
     t_end   = 1.0            # Simulate 1 year
@@ -14,13 +13,13 @@ def earth_sun():
 
     # Semi-major axes (in AU)
     a_earth   = 1.0
-    positions = [[0.0, 0.0],
-                 [a_earth,   0.0]]
+    positions = [[0.0, 0.0, 0.0],
+                 [a_earth, 0.0, 0.0]]
 
     # Velocities for circular orbits (in AU/year)
     v_earth   = 2*math.pi/math.sqrt(a_earth)
-    velocities = [[0.0, 0.0],
-                  [0.0,  v_earth]]
+    velocities = [[0.0, 0.0, 0.0],
+                  [0.0,  v_earth, 0.0]]
 
     return {"t_ini":      t_ini,
             "t_end":      t_end,
@@ -64,15 +63,15 @@ def solar_system():
     a_saturn  = 9.58
     a_uranus  = 19.2
     a_neptune = 30.1
-    positions = [[0.0, 0.0],
-                 [a_mercury, 0.0],
-                 [a_venus,   0.0],
-                 [a_earth,   0.0],
-                 [a_mars,    0.0],
-                 [a_jupiter, 0.0],
-                 [a_saturn,  0.0],
-                 [a_uranus,  0.0],
-                 [a_neptune, 0.0]]
+    positions = [[0.0, 0.0, 0.0],
+                 [a_mercury, 0.0, 0.0],
+                 [a_venus,   0.0, 0.0],
+                 [a_earth,   0.0, 0.0],
+                 [a_mars,    0.0, 0.0],
+                 [a_jupiter, 0.0, 0.0],
+                 [a_saturn,  0.0, 0.0],
+                 [a_uranus,  0.0, 0.0],
+                 [a_neptune, 0.0, 0.0]]
 
     # Velocities for circular orbits (in AU/year)
     v_mercury = 2*math.pi/math.sqrt(a_mercury)
@@ -83,15 +82,15 @@ def solar_system():
     v_saturn  = 2*math.pi/math.sqrt(a_saturn)
     v_uranus  = 2*math.pi/math.sqrt(a_uranus)
     v_neptune = 2*math.pi/math.sqrt(a_neptune)
-    velocities = [[0.0, 0.0],
-                  [0.0,  v_mercury],
-                  [0.0,  v_venus],
-                  [0.0,  v_earth],
-                  [0.0,  v_mars],
-                  [0.0,  v_jupiter],
-                  [0.0,  v_saturn],
-                  [0.0,  v_uranus],
-                  [0.0,  v_neptune]]
+    velocities = [[0.0, 0.0, 0.0],
+                  [0.0,  v_mercury, 0.0],
+                  [0.0,  v_venus, 0.0],
+                  [0.0,  v_earth, 0.0],
+                  [0.0,  v_mars, 0.0],
+                  [0.0,  v_jupiter, 0.0],
+                  [0.0,  v_saturn, 0.0],
+                  [0.0,  v_uranus, 0.0],
+                  [0.0,  v_neptune, 0.0]]
 
     return {"t_ini":      t_ini,
             "t_end":      t_end,
@@ -107,10 +106,5 @@ AVAILABLE_PRESETS = {"earth_sun": earth_sun,
 
 
 def load_preset(name="default"):
-    """
-    Retourne un dictionnaire contenant les conditions initiales.
-    """
-    if name not in AVAILABLE_PRESETS:
-        raise ValueError(f"Preset '{name}' inconnu. Disponibles : {list(AVAILABLE_PRESETS)}")
-
+    if name not in AVAILABLE_PRESETS: raise ValueError(f"Preset '{name}' unknown. Available presets: {list(AVAILABLE_PRESETS)}")
     return AVAILABLE_PRESETS[name]()
