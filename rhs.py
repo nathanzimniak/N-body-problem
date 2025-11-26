@@ -4,9 +4,9 @@ def compute_dudt(t, u, m, G):
     # Nombre de corps
     N_bodies = len(m)
 
-    # Extraction des positions [[x1, y1], ..., [xN, yN]] et vitesses [[vx1, vy1], ..., [vxN, vyN]] à partir de u
-    positions  = [u[4*i : 4*i+2] for i in range(N_bodies)]
-    velocities = [u[4*i+2 : 4*i+4] for i in range(N_bodies)]
+    # Extraction des positions [[x1, y1, z1], ..., [xN, yN, zN]] et vitesses [[vx1, vy1, vz1], ..., [vxN, vyN, vzN]] à partir de u
+    positions  = [u[6*i     : 6*i+3] for i in range(N_bodies)]
+    velocities = [u[6*i + 3 : 6*i+6] for i in range(N_bodies)]
 
     # Calcul des accélérations [[ax1, ay1], ..., [axN, ayN]]
     accelerations = compute_accelerations(positions, m, G)
