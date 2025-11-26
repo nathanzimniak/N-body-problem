@@ -79,7 +79,7 @@ visual_params = {
     "point_colors":      ["#FFB81F", "#6E6D88", "#C39531", "#006FFF", "#FF2F00"], # liste de couleurs ou None
     "point_edge_colors": ["#FFB81F", "#6E6D88", "#C39531", "#006FFF", "#FF2F00"], # liste de couleurs de bord par corps
     "trail_colors":      ["#FFB81F", "#6E6D88", "#C39531", "#006FFF", "#FF2F00"], # liste de couleurs ou None
-    "point_sizes":       [15, 3, 5, 6, 4],           # liste de tailles des points ou None
+    "point_sizes":       [13, 3, 5, 6, 4],           # liste de tailles des points ou None
     "point_edge_widths": [15/5, 3/5, 5/5, 6/5, 4/5], # liste d'épaisseurs de bord par corps
     "trail_widths":      [15/3, 3/3, 5/3, 6/3, 4/3], # liste de largeurs des traits ou None
 }
