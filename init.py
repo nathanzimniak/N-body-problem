@@ -3,8 +3,8 @@ import math
 
 def earth_sun():
     t_ini   = 0.0
-    t_end   = 1.0   # Simulate 1 year
-    N_steps = 365*1 # 1 step per day
+    t_end   = 1.0            # Simulate 1 year
+    N_steps = int(365*t_end) # 1 step per day
 
     # Masses (in solar masses)
     M_sun     = 1.0
@@ -32,8 +32,8 @@ def earth_sun():
 
 def solar_system():
     t_ini   = 0.0
-    t_end   = 50.0   # Simulate 50 years
-    N_steps = 365*50 # 1 step per day
+    t_end   = 50.0           # Simulate 50 years
+    N_steps = int(365*t_end) # 1 step per 1 days
 
     # Masses (in solar masses)
     M_sun     = 1.0

@@ -10,10 +10,10 @@ G = 4*math.pi**2
 # Input parameters
 config = load_preset("solar_system")
 
-# Récupération
-t_ini   = config["t_ini"]
-t_end   = config["t_end"]
-N_steps = config["N_steps"]
+# Extract configuration
+t_ini      = config["t_ini"]
+t_end      = config["t_end"]
+N_steps    = config["N_steps"]
 masses     = config["masses"]     # [m1, ..., mN]
 positions  = config["positions"]  # [[x1, y1], ..., [xN, yN]]
 velocities = config["velocities"] # [[vx1, vy1], ..., [vxN, vyN]]
@@ -23,35 +23,35 @@ N_bodies = len(masses)
 bodies = [Body(masses[i], positions[i], velocities[i]) for i in range(N_bodies)]
 system = System(bodies)
 
-# Calcul des paramètres temporels
+# Compute time parameters
 t = t_ini
 dt = (t_end - t_ini)/N_steps
 
-# Création du vecteur d'état u = [x1, y1, vx1, vy1, ..., xN, yN, vxN, vyN]
+# Create the state vector u = [x1, y1, vx1, vy1, ..., xN, yN, vxN, vyN]
 u = [component for body in bodies for component in (body.position + body.velocity)]
 
-# Création du vecteur des masses m = [m1, ..., mN]
+# Create the mass vector m = [m1, ..., mN]
 m = [body.mass for body in bodies]
 
-# Initialisation des listes contenant les trajectoires des corps
+# Initialization of lists containing the trajectories of the bodies
 traj_x = [[u[4*i]]     for i in range(N_bodies)]
 traj_y = [[u[4*i + 1]] for i in range(N_bodies)]
 
 for step in range(N_steps):
 
-    # Intégration en t+dt
+    # Integration at t+dt
     u = rk4(t, u, dt, compute_dudt, m, G)
 
-    # Extraction des positions [[x1, y1], ..., [xN, yN]] et vitesses [[vx1, vy1], ..., [vxN, vyN]] à partir de u
+    # Extraction of positions [[x1, y1], ..., [xN, yN]] and velocities [[vx1, vy1], ..., [vxN, vyN]] from u
     positions  = [u[4*i : 4*i+2] for i in range(N_bodies)]
     velocities = [u[4*i+2 : 4*i+4] for i in range(N_bodies)]
 
-    # Mise à jour de chaque corps contenu dans le système
+    # Update each body contained in the system
     for i, body in enumerate(system.bodies):
         body.position = positions[i]
         body.velocity = velocities[i]
 
-    # Incrémentation du temps
+    # Time increment
     t += dt
 
     for i, (x, y) in enumerate(positions):
@@ -69,8 +69,22 @@ import matplotlib.pyplot as plt
 fig, ax = plt.subplots()
 ax.set_aspect("equal", "box")
 
-xmin, xmax = -10, 10
-ymin, ymax = -10, 10
+all_x = [x for xs in traj_x for x in xs]
+all_y = [y for ys in traj_y for y in ys]
+
+xmin, xmax = min(all_x), max(all_x)
+ymin, ymax = min(all_y), max(all_y)
+
+xmin = max(xmin, -30) - 1
+xmax = min(xmax,  30) + 1
+ymin = max(ymin, -30) - 1
+ymax = min(ymax,  30) + 1
+
+xmin = -max(abs(xmin), abs(xmax), abs(ymin), abs(ymax))
+ymin = -max(abs(xmin), abs(xmax), abs(ymin), abs(ymax))
+xmax = max(abs(xmin), abs(xmax), abs(ymin), abs(ymax))
+ymax = max(abs(xmin), abs(xmax), abs(ymin), abs(ymax))
+
 ax.set_xlim(xmin, xmax)
 ax.set_ylim(ymin, ymax)
 
