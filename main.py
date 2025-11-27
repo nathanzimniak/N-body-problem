@@ -66,21 +66,29 @@ for step in range(N_steps):
 
 
 
+# Visualization parameters
+trail_length      = config["trail_length"]
+point_colors      = config["point_colors"]
+point_edge_colors = config["point_edge_colors"]
+trail_colors      = config["trail_colors"]
+point_sizes       = config["point_sizes"]
+point_edge_widths = config["point_edge_widths"]
+trail_widths      = config["trail_widths"]
+axis_limits       = config["axis_limits"]
+elevation_angle   = config["elevation_angle"]
+azimuthal_angle   = config["azimuthal_angle"]
 
+# Pack visual parameters into a dictionary
+visual_params = {"trail_length":      trail_length,
+                 "point_colors":      point_colors,
+                 "point_edge_colors": point_edge_colors,
+                 "trail_colors":      trail_colors,
+                 "point_sizes":       point_sizes,
+                 "point_edge_widths": point_edge_widths,
+                 "trail_widths":      trail_widths,
+                 "axis_limits":       axis_limits,
+                 "elevation_angle":   elevation_angle,
+                 "azimuthal_angle":   azimuthal_angle}
 
-
-
-
-# User parameters for visualization
-visual_params = {"trail_length": 50,
-                 "point_colors":      ["#FFB81F", "#6E6D88", "#C39531", "#006FFF", "#FF2F00"],
-                 "point_edge_colors": ["#FFB81F", "#6E6D88", "#C39531", "#006FFF", "#FF2F00"],
-                 "trail_colors":      ["#FFB81F", "#6E6D88", "#C39531", "#006FFF", "#FF2F00"],
-                 "point_sizes":       [13, 3, 5, 6, 4],
-                 "point_edge_widths": [15/5, 3/5, 5/5, 6/5, 4/5],
-                 "trail_widths":      [15/3, 3/3, 5/3, 6/3, 4/3],
-                 "axis_limits":       [-2.0, 2.0, -2.0, 2.0, -2.0, 2.0],
-                 "elevation_angle": 35,
-                 "azimuthal_angle": 45}
-
+# Plot the trajectories
 plot_trajectories(traj_x, traj_y, traj_z, dt, N_bodies, visual_params)

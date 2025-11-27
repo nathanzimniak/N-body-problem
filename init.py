@@ -1,6 +1,7 @@
 import math
 
 def earth_sun():
+    # Time parameters
     t_ini   = 0.0
     t_end   = 1.0            # Simulate 1 year
     N_steps = int(365*t_end) # 1 step per day
@@ -30,6 +31,7 @@ def earth_sun():
 
 
 def inner_solar_system():
+    # Time parameters
     t_ini   = 0.0
     t_end   = 50.0           # Simulate 50 years
     N_steps = int(365*t_end) # 1 step per 1 days
@@ -92,12 +94,33 @@ def inner_solar_system():
                   #[0.0,  v_uranus, 0.0],
                   #[0.0,  v_neptune, 0.0]]
 
-    return {"t_ini":      t_ini,
-            "t_end":      t_end,
-            "N_steps":    N_steps,
-            "masses":     masses,
-            "positions":  positions,
-            "velocities": velocities}
+    trail_length      = 50
+    point_colors      = ["#FFB81F", "#6E6D88", "#C39531", "#006FFF", "#FF2F00"]
+    point_edge_colors = ["#FFB81F", "#6E6D88", "#C39531", "#006FFF", "#FF2F00"]
+    trail_colors      = ["#FFB81F", "#6E6D88", "#C39531", "#006FFF", "#FF2F00"]
+    point_sizes       = [13, 3, 5, 6, 4]
+    point_edge_widths = [15/5, 3/5, 5/5, 6/5, 4/5]
+    trail_widths      = [15/3, 3/3, 5/3, 6/3, 4/3]
+    axis_limits       = [-2.0, 2.0, -2.0, 2.0, -2.0, 2.0]
+    elevation_angle   = 35
+    azimuthal_angle   = 45
+
+    return {"t_ini":             t_ini,
+            "t_end":             t_end,
+            "N_steps":           N_steps,
+            "masses":            masses,
+            "positions":         positions,
+            "velocities":        velocities,
+            "trail_length":      trail_length,
+            "point_colors":      point_colors,
+            "point_edge_colors": point_edge_colors,
+            "trail_colors":      trail_colors,
+            "point_sizes":       point_sizes,
+            "point_edge_widths": point_edge_widths,
+            "trail_widths":      trail_widths,
+            "axis_limits":       axis_limits,
+            "elevation_angle":   elevation_angle,
+            "azimuthal_angle":   azimuthal_angle}
 
 # ----- Sélecteur de preset -----
 
