@@ -98,8 +98,8 @@ def inner_solar_system():
     point_sizes       = [13, 3, 5, 6, 4]
     point_edge_widths = [size/5 for size in point_sizes]
     trail_widths      = [size/3 for size in point_sizes]
-    axis_limits       = [-2.0, 2.0, -2.0, 2.0, -2.0, 2.0]
-    elevation_angle   = 35
+    axis_limits       = [-1.7, 1.7, -1.7, 1.7, -1.7, 1.7]
+    elevation_angle   = 40
     azimuthal_angle   = 45
 
     return {"t_ini":             t_ini,
