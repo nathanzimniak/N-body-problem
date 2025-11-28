@@ -55,7 +55,17 @@ def plot_trajectories(traj_x, traj_y, traj_z, dt, N_bodies, visual_params):
     trails = [ax.plot([], [], [], "-", color=trail_colors[i], linewidth=trail_widths[i])[0] for i in range(N_bodies)]
 
     # Time text
-    time_text = ax.text2D(0.02, 0.95, "", transform=ax.transAxes)
+    time_text = ax.text2D(0.5, 1.0, "", ha="center", va="bottom", fontsize=11, transform=ax.transAxes)
+
+    #time_text = ax.text2D(
+    #    0.5, 1.02,          # x centré, y juste au-dessus de l’axe
+    #    "",
+    #    transform=ax.transAxes,
+    #    ha="center",
+    #    va="bottom",
+    #    fontsize=14,
+    #    color="white",
+    #)
 
     # Animation initialization function
     def init():
@@ -91,6 +101,6 @@ def plot_trajectories(traj_x, traj_y, traj_z, dt, N_bodies, visual_params):
         return trails + points + [time_text]
 
     # Create animation
-    ani = FuncAnimation(fig, update, frames=len(traj_x[0]), init_func=init, interval=20, blit=True)
+    ani = FuncAnimation(fig, update, frames=len(traj_x[0]), init_func=init, interval=30, blit=False)
 
     plt.show()
