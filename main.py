@@ -6,10 +6,10 @@ from init import load_preset
 from plot import plot_trajectories
 
 # Constants
-G = 4*math.pi**2
+G = 1#4*math.pi**2
 
 # Input parameters
-config = load_preset("inner_solar_system")  # Choix du preset ("earth_sun" ou "solar_system")
+config = load_preset("three_body_choreography")  # Choix du preset ("earth_sun" ou "solar_system")
 
 # Extract configuration
 t_ini      = config["t_ini"]
