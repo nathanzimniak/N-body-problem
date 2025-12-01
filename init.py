@@ -140,8 +140,8 @@ def three_body_3d_orbits():
                  [x3, y3, z3]]
 
     # Vitesses initiales (tes v, avec vz = 0)
-    vx1, vy1, vz1 =  0.464445,  0.39606, 0.0
-    vx2, vy2, vz2 =  0.464445,  0.39606, 0.0
+    vx1, vy1, vz1 = 0.464445,  0.39606, 0.0
+    vx2, vy2, vz2 = 0.464445,  0.39606, 0.0
     vx3, vy3, vz3 = -0.92889,  -0.79212, 0.0
     velocities = [[vx1, vy1, vz1],
                   [vx2, vy2, vz2],
