@@ -68,9 +68,9 @@ for step in range(N_steps):
 
 
 # Create output directory if it doesn't exist
-if not os.path.exists("outputs"): os.makedirs("outputs")
+if not os.path.exists("../outputs"): os.makedirs("../outputs")
 
-output_file = f"./outputs/{preset}.csv"
+output_file = f"../outputs/{preset}.csv"
 
 # Save data to CSV
 with open(output_file, mode="w", newline="") as f:
