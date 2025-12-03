@@ -1,17 +1,17 @@
 import math
 import csv
 import os
-from bodies import Body, System
+from bodies     import Body, System
 from integrator import euler, rk4
-from rhs import compute_dudt
-from init import load_preset
-
-# Constants
-G = 4*math.pi**2
+from rhs        import compute_dudt
+from init       import load_preset
 
 # Input parameters
 preset = "inner_solar_system"
 config = load_preset(preset)
+
+# Define constants
+G = 4*math.pi**2
 
 # Extract configuration
 t_ini      = config["t_ini"]
@@ -67,16 +67,15 @@ for step in range(N_steps):
     times.append(t)
 
 
-# Save data to CSV
+# Create output directory if it doesn't exist
 if not os.path.exists("outputs"): os.makedirs("outputs")
+
 output_file = f"./outputs/{preset}.csv"
 
+# Save data to CSV
 with open(output_file, mode="w", newline="") as f:
     writer = csv.writer(f)
     writer.writerow(["t", "body", "x", "y", "z"])
-
     for k, tk in enumerate(times):
         for i in range(N_bodies):
             writer.writerow([tk, i, traj_x[i][k], traj_y[i][k], traj_z[i][k]])
-
-print(f"Données enregistrées dans {output_file}")
