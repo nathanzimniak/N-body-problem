@@ -3,8 +3,7 @@ from bodies import Body, System
 from integrator import euler, rk4
 from rhs import compute_dudt
 from init import load_preset
-from plot import plot_trajectories
-from save import save_data
+import csv
 
 # Constants
 G = 4*math.pi**2
@@ -65,4 +64,16 @@ for step in range(N_steps):
     t += dt
     times.append(t)
 
-save_data(traj_x, traj_y, traj_z, times, N_bodies)
+
+# Save data to CSV
+output_file = "output.csv"
+
+with open(output_file, mode="w", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerow(["t", "body", "x", "y", "z"])
+
+    for k, tk in enumerate(times):
+        for i in range(N_bodies):
+            writer.writerow([tk, i, traj_x[i][k], traj_y[i][k], traj_z[i][k]])
+
+print(f"Données enregistrées dans {output_file}")
