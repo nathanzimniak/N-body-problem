@@ -65,34 +65,4 @@ for step in range(N_steps):
     t += dt
     times.append(t)
 
-
 save_data(traj_x, traj_y, traj_z, times, N_bodies)
-
-plot_trajectories("output.csv", "output.mp4")
-
-## Visualization parameters
-#trail_length      = config["trail_length"]
-#point_colors      = config["point_colors"]
-#point_edge_colors = config["point_edge_colors"]
-#trail_colors      = config["trail_colors"]
-#point_sizes       = config["point_sizes"]
-#point_edge_widths = config["point_edge_widths"]
-#trail_widths      = config["trail_widths"]
-#axis_limits       = config["axis_limits"]
-#elevation_angle   = config["elevation_angle"]
-#azimuthal_angle   = config["azimuthal_angle"]
-#
-## Pack visual parameters into a dictionary
-#visual_params = {"trail_length":      trail_length,
-#                 "point_colors":      point_colors,
-#                 "point_edge_colors": point_edge_colors,
-#                 "trail_colors":      trail_colors,
-#                 "point_sizes":       point_sizes,
-#                 "point_edge_widths": point_edge_widths,
-#                 "trail_widths":      trail_widths,
-#                 "axis_limits":       axis_limits,
-#                 "elevation_angle":   elevation_angle,
-#                 "azimuthal_angle":   azimuthal_angle}
-#
-## Plot the trajectories
-#plot_trajectories(traj_x, traj_y, traj_z, dt, N_bodies, visual_params)
