@@ -3,7 +3,7 @@ import math
 def earth_sun():
     # Time parameters
     t_ini   = 0.0
-    t_end   = 1.0            # Simulate 1 year
+    t_end   = 2.0            # Simulate 2 years
     N_steps = int(365*t_end) # 1 step per day
 
     # Masses (in solar masses)
@@ -22,39 +22,18 @@ def earth_sun():
     velocities = [[0.0, 0.0, 0.0],
                   [0.0,  v_earth, 0.0]]
 
-    trail_length      = 50
-    point_colors      = ["#FFB81F", "#006FFF"]
-    point_edge_colors = ["#FFB81F", "#006FFF"]
-    trail_colors      = ["#FFB81F", "#006FFF"]
-    point_sizes       = [13, 6]
-    point_edge_widths = [15/5, 6/5]
-    trail_widths      = [15/3, 6/3]
-    axis_limits       = [-2.0, 2.0, -2.0, 2.0, -2.0, 2.0]
-    elevation_angle   = 40
-    azimuthal_angle   = 45
-
     return {"t_ini":             t_ini,
             "t_end":             t_end,
             "N_steps":           N_steps,
             "masses":            masses,
             "positions":         positions,
-            "velocities":        velocities,
-            "trail_length":      trail_length,
-            "point_colors":      point_colors,
-            "point_edge_colors": point_edge_colors,
-            "trail_colors":      trail_colors,
-            "point_sizes":       point_sizes,
-            "point_edge_widths": point_edge_widths,
-            "trail_widths":      trail_widths,
-            "axis_limits":       axis_limits,
-            "elevation_angle":   elevation_angle,
-            "azimuthal_angle":   azimuthal_angle}
+            "velocities":        velocities}
 
 
 def inner_solar_system():
     # Time parameters
     t_ini   = 0.0
-    t_end   = 50.0           # Simulate 50 years
+    t_end   = 1.0            # Simulate 1 year
     N_steps = int(365*t_end) # 1 step per 1 days
 
     # Masses (in solar masses)
@@ -91,33 +70,12 @@ def inner_solar_system():
                   [0.0,  v_earth, 0.0],
                   [0.0,  v_mars, 0.0]]
 
-    trail_length      = 50
-    point_colors      = ["#FFB81F", "#6E6D88", "#C39531", "#006FFF", "#FF2F00"]
-    point_edge_colors = ["#FFB81F", "#6E6D88", "#C39531", "#006FFF", "#FF2F00"]
-    trail_colors      = ["#FFB81F", "#6E6D88", "#C39531", "#006FFF", "#FF2F00"]
-    point_sizes       = [13, 3, 5, 6, 4]
-    point_edge_widths = [size/5 for size in point_sizes]
-    trail_widths      = [size/3 for size in point_sizes]
-    axis_limits       = [-1.7, 1.7, -1.7, 1.7, -1.7, 1.7]
-    elevation_angle   = 40
-    azimuthal_angle   = 45
-
     return {"t_ini":             t_ini,
             "t_end":             t_end,
             "N_steps":           N_steps,
             "masses":            masses,
             "positions":         positions,
-            "velocities":        velocities,
-            "trail_length":      trail_length,
-            "point_colors":      point_colors,
-            "point_edge_colors": point_edge_colors,
-            "trail_colors":      trail_colors,
-            "point_sizes":       point_sizes,
-            "point_edge_widths": point_edge_widths,
-            "trail_widths":      trail_widths,
-            "axis_limits":       axis_limits,
-            "elevation_angle":   elevation_angle,
-            "azimuthal_angle":   azimuthal_angle}
+            "velocities":        velocities}
 
 def three_body_3d_orbits():
     # Time parameters
@@ -147,35 +105,12 @@ def three_body_3d_orbits():
                   [vx2, vy2, vz2],
                   [vx3, vy3, vz3]]
 
-    # Paramètres visuels
-    trail_length      = 400
-    point_colors      = ["#FF0000", "#00AA00", "#0000FF"]
-    point_edge_colors = ["#FF0000", "#00AA00", "#0000FF"]
-    trail_colors      = ["#FF0000", "#00AA00", "#0000FF"]
-    point_sizes       = [10, 10, 10]
-    point_edge_widths = [size/5 for size in point_sizes]
-    trail_widths      = [size/3 for size in point_sizes]
-
-    axis_limits       = [-2.0, 2.0, -2.0, 2.0, -1.0, 1.0]
-    elevation_angle   = 40
-    azimuthal_angle   = 45
-
     return {"t_ini":             t_ini,
             "t_end":             t_end,
             "N_steps":           N_steps,
             "masses":            masses,
             "positions":         positions,
-            "velocities":        velocities,
-            "trail_length":      trail_length,
-            "point_colors":      point_colors,
-            "point_edge_colors": point_edge_colors,
-            "trail_colors":      trail_colors,
-            "point_sizes":       point_sizes,
-            "point_edge_widths": point_edge_widths,
-            "trail_widths":      trail_widths,
-            "axis_limits":       axis_limits,
-            "elevation_angle":   elevation_angle,
-            "azimuthal_angle":   azimuthal_angle}
+            "velocities":        velocities}
 
 
 
