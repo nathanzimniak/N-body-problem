@@ -1,9 +1,10 @@
 import math
+import csv
+import os
 from bodies import Body, System
 from integrator import euler, rk4
 from rhs import compute_dudt
 from init import load_preset
-import csv
 
 # Constants
 G = 4*math.pi**2
@@ -67,7 +68,8 @@ for step in range(N_steps):
 
 
 # Save data to CSV
-output_file = f"{preset}.csv"
+if not os.path.exists("outputs"): os.makedirs("outputs")
+output_file = f"./outputs/{preset}.csv"
 
 with open(output_file, mode="w", newline="") as f:
     writer = csv.writer(f)
