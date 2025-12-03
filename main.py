@@ -4,6 +4,7 @@ from integrator import euler, rk4
 from rhs import compute_dudt
 from init import load_preset
 from plot import plot_trajectories
+from save import save_data
 
 # Constants
 G = 4*math.pi**2
@@ -34,10 +35,11 @@ u = [component for body in bodies for component in (body.position + body.velocit
 # Create the mass vector m = [m1, ..., mN]
 m = [body.mass for body in bodies]
 
-# Initialization of lists containing the trajectories of the bodies
+# Initialization of lists containing the trajectories of the bodies and the times
 traj_x = [[u[6*i]]     for i in range(N_bodies)]
 traj_y = [[u[6*i+1]] for i in range(N_bodies)]
 traj_z = [[u[6*i+2]] for i in range(N_bodies)]
+times  = [t_ini]
 
 # Time integration loop
 for step in range(N_steps):
@@ -61,30 +63,36 @@ for step in range(N_steps):
 
     # Time increment
     t += dt
+    times.append(t)
 
-# Visualization parameters
-trail_length      = config["trail_length"]
-point_colors      = config["point_colors"]
-point_edge_colors = config["point_edge_colors"]
-trail_colors      = config["trail_colors"]
-point_sizes       = config["point_sizes"]
-point_edge_widths = config["point_edge_widths"]
-trail_widths      = config["trail_widths"]
-axis_limits       = config["axis_limits"]
-elevation_angle   = config["elevation_angle"]
-azimuthal_angle   = config["azimuthal_angle"]
 
-# Pack visual parameters into a dictionary
-visual_params = {"trail_length":      trail_length,
-                 "point_colors":      point_colors,
-                 "point_edge_colors": point_edge_colors,
-                 "trail_colors":      trail_colors,
-                 "point_sizes":       point_sizes,
-                 "point_edge_widths": point_edge_widths,
-                 "trail_widths":      trail_widths,
-                 "axis_limits":       axis_limits,
-                 "elevation_angle":   elevation_angle,
-                 "azimuthal_angle":   azimuthal_angle}
+save_data(traj_x, traj_y, traj_z, times, N_bodies)
 
-# Plot the trajectories
-plot_trajectories(traj_x, traj_y, traj_z, dt, N_bodies, visual_params)
+plot_trajectories("output.csv", "output.mp4")
+
+## Visualization parameters
+#trail_length      = config["trail_length"]
+#point_colors      = config["point_colors"]
+#point_edge_colors = config["point_edge_colors"]
+#trail_colors      = config["trail_colors"]
+#point_sizes       = config["point_sizes"]
+#point_edge_widths = config["point_edge_widths"]
+#trail_widths      = config["trail_widths"]
+#axis_limits       = config["axis_limits"]
+#elevation_angle   = config["elevation_angle"]
+#azimuthal_angle   = config["azimuthal_angle"]
+#
+## Pack visual parameters into a dictionary
+#visual_params = {"trail_length":      trail_length,
+#                 "point_colors":      point_colors,
+#                 "point_edge_colors": point_edge_colors,
+#                 "trail_colors":      trail_colors,
+#                 "point_sizes":       point_sizes,
+#                 "point_edge_widths": point_edge_widths,
+#                 "trail_widths":      trail_widths,
+#                 "axis_limits":       axis_limits,
+#                 "elevation_angle":   elevation_angle,
+#                 "azimuthal_angle":   azimuthal_angle}
+#
+## Plot the trajectories
+#plot_trajectories(traj_x, traj_y, traj_z, dt, N_bodies, visual_params)
