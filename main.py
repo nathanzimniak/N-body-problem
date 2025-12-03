@@ -9,7 +9,8 @@ import csv
 G = 4*math.pi**2
 
 # Input parameters
-config = load_preset("inner_solar_system")  # Choix du preset ("earth_sun" ou "solar_system")
+preset = "inner_solar_system"
+config = load_preset(preset)
 
 # Extract configuration
 t_ini      = config["t_ini"]
@@ -66,7 +67,7 @@ for step in range(N_steps):
 
 
 # Save data to CSV
-output_file = "output.csv"
+output_file = f"{preset}.csv"
 
 with open(output_file, mode="w", newline="") as f:
     writer = csv.writer(f)
