@@ -3,7 +3,7 @@ import os
 import json
 
 # Preset selection
-preset = "three_body_orbits"
+preset = "three_body_orbits"#"inner_solar_system"
 
 # Paths configuration
 PATH_BLENDER               = "/Applications/Blender.app/Contents/MacOS/Blender"
@@ -45,7 +45,7 @@ cam_location_json = json.dumps(CAM_LOCATION)
 cam_target_json   = json.dumps(CAM_TARGET)
 
 # Launch Blender in background mode with the specified blend file and script to render frames
-print("Launching Blender to render frames...")
+print("Launching Blender to render frames...\n")
 
 cmd = [PATH_BLENDER,
        "-b", PATH_BLENDER_TEMPLATE_FILE,
@@ -68,10 +68,10 @@ cmd = [PATH_BLENDER,
 
 subprocess.run(cmd, check=True)
 
-print("Rendering completed.")
+print("\nRendering completed.\n")
 
 # After rendering frames, create a video using ffmpeg
-print("Creating final video with ffmpeg...")
+print("Creating final video with ffmpeg...\n")
 
 os.chdir(PATH_OUTPUT_DIR)
 
@@ -85,4 +85,4 @@ cmd_ffmpeg = ["ffmpeg",
 
 subprocess.run(cmd_ffmpeg, check=True)
 
-print("Video creation completed.")
+print("\nVideo creation completed.")

@@ -32,18 +32,14 @@ BODY_COLORS  = {int(k): str(v) for k, v in BODY_COLORS.items()}
 CAM_LOCATION = tuple(CAM_LOCATION)
 CAM_TARGET   = tuple(CAM_TARGET)
 
-
-DEFAULT_RADIUS = 0.05
+# Number of frames per year (assuming time t is in years)
 FRAMES_PER_YEAR = 365.0
 
-# -------- Traînée en petites boules interpolées --------
-TRAIL_STEP_FRAMES = 0.25   # espacement temporel entre 2 boules (0.25 => 4 boules par frame)
+# Interpolation step for trails
+TRAIL_STEP_FRAMES = 0.25
 
 
-# =====================================================
-#   FONCTION DE CONVERSION HEX (#rrggbb) → (r,g,b,a)
-# =====================================================
-
+# Function to convert hex color to RGBA
 def hex_to_rgba(hex_color, alpha_override=1.0):
     hex_color = hex_color.strip().lstrip("#")
     if len(hex_color) != 6:
@@ -54,95 +50,54 @@ def hex_to_rgba(hex_color, alpha_override=1.0):
     return (r, g, b, alpha_override)
 
 
-# =====================================================
-#          CHARGER LE TEMPLATE
-# =====================================================
-
-#if not os.path.isfile(TEMPLATE_BLEND):
-#    raise FileNotFoundError(f"Template .blend introuvable : {TEMPLATE_BLEND}")
-
-#bpy.ops.wm.open_mainfile(filepath=TEMPLATE_BLEND)
-#print("🟢 Template chargé :", TEMPLATE_BLEND)
-
 scene = bpy.context.scene
 
-# =====================================================
-#      SUPPRIMER LES OBJETS MESH DU TEMPLATE
-# =====================================================
 
+# Clean up existing mesh objects
 for obj in list(bpy.data.objects):
     if obj.type == 'MESH':
         bpy.data.objects.remove(obj, do_unlink=True)
 
-print("🧹 Mesh supprimés, compositor conservé.")
 
-# =====================================================
-#          CONFIG RENDU
-# =====================================================
 
-#scene.render.engine = 'CYCLES'
-scene.render.engine = 'BLENDER_EEVEE'
-scene.render.resolution_x = RES_X
-scene.render.resolution_y = RES_Y
+# Setup render settings
+scene.render.engine                = 'BLENDER_EEVEE' #'CYCLES'
+scene.render.resolution_x          = RES_X
+scene.render.resolution_y          = RES_Y
 scene.render.resolution_percentage = 100
-scene.render.fps = FPS
-scene.frame_start = FRAME_START
-scene.frame_end = FRAME_END
+scene.render.fps                   = FPS
+scene.frame_start                  = FRAME_START
+scene.frame_end                    = FRAME_END
+scene.render.use_motion_blur       = False
+scene.cycles.samples               = 32
+scene.cycles.preview_samples       = 16
 
-# motion blur léger (optionnel)
-scene.render.use_motion_blur = False
-scene.cycles.samples = 32
-scene.cycles.preview_samples = 16
 if scene.render.engine == 'CYCLES':
     cycles_settings = scene.cycles
     if hasattr(cycles_settings, "motion_blur_shutter"):
         cycles_settings.motion_blur_shutter = 0.5
 
-print("🎛️ Rendu configuré.")
-
-# =====================================================
-#          FOND NOIR
-# =====================================================
-
+# Setup black background
 world = scene.world
-if world is None:
-    world = bpy.data.worlds.new("World")
-    scene.world = world
+nt    = world.node_tree
+bg    = None
 
-if world.use_nodes:
-    nt = world.node_tree
-    bg = None
-    for node in nt.nodes:
-        if node.type == 'BACKGROUND':
-            bg = node
-            break
-    if bg:
-        bg.inputs["Color"].default_value = (0.0, 0.0, 0.0, 1.0)
-    else:
-        bg = nt.nodes.new("ShaderNodeBackground")
-        bg.inputs["Color"].default_value = (0.0, 0.0, 0.0, 1.0)
-        out = nt.nodes.get("World Output")
-        if out:
-            nt.links.new(bg.outputs["Background"], out.inputs["Surface"])
-else:
-    world.color = (0.0, 0.0, 0.0)
+for node in nt.nodes:
+    if node.type == 'BACKGROUND':
+        bg = node
+        break
 
-print("🌌 Fond noir configuré.")
+if bg: bg.inputs["Color"].default_value = (0.0, 0.0, 0.0, 1.0)
 
-# =====================================================
-#          CAMÉRA
-# =====================================================
-
+# Setup camera
 for obj in list(bpy.data.objects):
     if obj.type == 'CAMERA':
         bpy.data.objects.remove(obj, do_unlink=True)
 
 cam_data = bpy.data.cameras.new("Camera")
-cam_obj = bpy.data.objects.new("Camera", cam_data)
+cam_obj  = bpy.data.objects.new("Camera", cam_data)
 scene.collection.objects.link(cam_obj)
 scene.camera = cam_obj
-
-# utiliser la config
 cam_obj.location = CAM_LOCATION
 
 def look_at(obj, target):
@@ -152,12 +107,9 @@ def look_at(obj, target):
     obj.rotation_euler = rot_quat.to_euler()
 
 look_at(cam_obj, CAM_TARGET)
-print("🎥 Caméra créée et orientée.")
 
-# =====================================================
-#          MATÉRIAUX EMISSIFS
-# =====================================================
 
+# Setup material with emission shader
 def make_material_for_body(body_id: int, hex_color: str):
     rgba = hex_to_rgba(hex_color)
     mat = bpy.data.materials.new(name=f"GlowMaterial_{body_id}")
@@ -176,14 +128,12 @@ def make_material_for_body(body_id: int, hex_color: str):
     links.new(emission.outputs["Emission"], output.inputs["Surface"])
     return mat
 
-# =====================================================
-#          IMPORT CSV + ANIMATION DES CORPS
-# =====================================================
 
-objects = {}
-cleared_bodies = set()
-positions_by_body_frame = {}  # body_id -> {frame: (x,y,z)}
-body_materials = {}
+# Import data from CSV and create animated objects
+objects                 = {}
+cleared_bodies          = set()
+positions_by_body_frame = {}
+body_materials          = {}
 
 with open(PATH_CSV_FILE, newline='') as f:
     reader = csv.DictReader(f)
@@ -197,7 +147,6 @@ with open(PATH_CSV_FILE, newline='') as f:
         if frame < FRAME_START or frame > FRAME_END:
             continue
 
-        # mémoriser la position pour cette frame
         if body_id not in positions_by_body_frame:
             positions_by_body_frame[body_id] = {}
         positions_by_body_frame[body_id][frame] = (x, y, z)
@@ -205,11 +154,8 @@ with open(PATH_CSV_FILE, newline='') as f:
         obj_name = f"body_{body_id}"
 
         if body_id not in objects:
-            radius = BODY_SIZES.get(body_id, DEFAULT_RADIUS)
-            bpy.ops.mesh.primitive_uv_sphere_add(
-                radius=radius,
-                location=(x, y, z)
-            )
+            radius = BODY_SIZES[body_id]
+            bpy.ops.mesh.primitive_uv_sphere_add(radius=radius, location=(x, y, z))
             obj = bpy.context.view_layer.objects.active
             if obj is None:
                 raise RuntimeError("Impossible de récupérer la sphère nouvellement créée.")
@@ -231,31 +177,21 @@ with open(PATH_CSV_FILE, newline='') as f:
         obj.location = (x, y, z)
         obj.keyframe_insert("location", frame=frame)
 
-print("✅ Corps animés depuis le CSV.")
-
-# =====================================================
-#          CRÉATION DES BOULES DE TRAÎNÉE
-# =====================================================
-
-trail_objects = {}  # body_id -> liste de ghosts
+# Create trail objects
+trail_objects = {}
 
 for body_id, main_obj in objects.items():
     ghosts = []
-    base_radius = BODY_SIZES.get(body_id, DEFAULT_RADIUS) * TRAIL_THICKNESS
+    base_radius = BODY_SIZES[body_id] * TRAIL_THICKNESS
     mat = body_materials.get(body_id, None)
 
     for k in range(TRAIL_LENGTH):
-        bpy.ops.mesh.primitive_uv_sphere_add(
-            radius=base_radius,
-            location=main_obj.location
-        )
+        bpy.ops.mesh.primitive_uv_sphere_add(radius=base_radius, location=main_obj.location)
         ghost = bpy.context.view_layer.objects.active
         ghost.name = f"body_{body_id}_trail_{k}"
 
-        if mat is not None:
-            ghost.data.materials.append(mat)
+        if mat is not None: ghost.data.materials.append(mat)
 
-        # On part caché par défaut
         ghost.hide_render = True
         ghost.hide_viewport = True
 
@@ -263,21 +199,13 @@ for body_id, main_obj in objects.items():
 
     trail_objects[body_id] = ghosts
 
-print("🌠 Objets de traînée créés.")
-
-# =====================================================
-#          ANIMATION DES TRAÎNÉES (AVEC INTERPOLATION)
-# =====================================================
-
+# Animate trail objects
 for body_id, frames_dict in positions_by_body_frame.items():
     ghosts = trail_objects.get(body_id, [])
-    if not ghosts:
-        continue
+    if not ghosts: continue
 
     for frame in range(FRAME_START, FRAME_END + 1):
-
         if frame not in frames_dict:
-            # aucune position pour ce frame → on cache les ghosts
             for ghost in ghosts:
                 ghost.hide_render = True
                 ghost.hide_viewport = True
@@ -286,10 +214,8 @@ for body_id, frames_dict in positions_by_body_frame.items():
             continue
 
         for k, ghost in enumerate(ghosts):
-            # temps "fractionnaire" derrière la boule
             source_time = frame - k * TRAIL_STEP_FRAMES
 
-            # trop ancien → on coupe
             if source_time < FRAME_START:
                 ghost.hide_render = True
                 ghost.hide_viewport = True
@@ -317,7 +243,6 @@ for body_id, frames_dict in positions_by_body_frame.items():
 
             ghost.location = v
 
-            # taille décroissante le long de la traînée
             scale_factor = max(0.2, 1.0 - (k / TRAIL_LENGTH))
             ghost.scale = (scale_factor, scale_factor, scale_factor)
 
@@ -328,23 +253,12 @@ for body_id, frames_dict in positions_by_body_frame.items():
             ghost.keyframe_insert("location", frame=frame)
             ghost.keyframe_insert("scale", frame=frame)
 
-print(f"✨ Traînées interpolées sur ~{TRAIL_LENGTH * TRAIL_STEP_FRAMES} frames.")
 
-# =====================================================
-#          RENDU PNG
-# =====================================================
-
+# Setup output settings
 scene.render.image_settings.file_format = 'PNG'
-scene.render.image_settings.color_mode = 'RGB'
+scene.render.image_settings.color_mode  = 'RGB'
 scene.render.image_settings.color_depth = '8'
 scene.render.filepath = os.path.join(PATH_OUTPUT_DIR, "frame_")
 
-print("📁 Rendu PNG ->", PATH_OUTPUT_DIR)
-print("🎬 FPS:", FPS, "| Frames:", FRAME_START, "→", FRAME_END)
-
-# =====================================================
-#          LANCER LE RENDU AUTOMATIQUEMENT
-# =====================================================
-
-# Rendre l'animation complète (équivalent de Ctrl+F12)
+# Render the animation
 bpy.ops.render.render(animation=True)
