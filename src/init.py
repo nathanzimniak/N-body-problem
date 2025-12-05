@@ -50,8 +50,8 @@ def inner_solar_system():
 def three_body_orbits():
     # Time parameters
     t_ini   = 0.0
-    t_end   = 2.0            # Simulate 2 years
-    N_steps = int(365*t_end*2) # 1 step per 1 days
+    t_end   = 4.0              # Simulate 4 years
+    N_steps = int(2*365*t_end) # 2 step per 1 days
 
     # Masses (in solar masses)
     M1 = 1.0
