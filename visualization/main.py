@@ -1,9 +1,12 @@
 import subprocess
 import os
 import json
+import time
+
+t0 = time.time()
 
 # Preset selection
-preset = "three_body_orbits"#"inner_solar_system"
+preset = "inner_solar_system"#"three_body_orbits"
 
 # Paths configuration
 PATH_BLENDER               = "/Applications/Blender.app/Contents/MacOS/Blender"
@@ -15,10 +18,10 @@ PATH_OUTPUT_DIR            = rf"/Users/nathanzimniak/Documents/Projets/N-body-pr
 #Style settings
 if preset == "inner_solar_system":
     BODY_SIZES        = {0: 0.1, 1: 0.015, 2: 0.025, 3: 0.03, 4: 0.02}
-    BODY_COLORS       = {0: "#FFB81F", 1: "#6E6D88", 2: "#C39531", 3: "#006FFF", 4: "#FF2F00"}
-    TRAIL_LENGTH      = 400
-    TRAIL_THICKNESS   = 0.5
-    EMISSION_STRENGTH = 10.0
+    BODY_COLORS       = {0: "#FFB81F", 1: "#404040", 2: "#FF7B00", 3: "#0044FF", 4: "#FF2F00"}
+    TRAIL_LENGTH      = 200
+    TRAIL_THICKNESS   = 0.3
+    EMISSION_STRENGTH = 15.0
 elif preset == "three_body_orbits":
     BODY_SIZES        = {0: 0.07, 1: 0.07, 2: 0.07}
     BODY_COLORS       = {0: "#FFB81F", 1: "#006FFF", 2: "#FF2F00"}
@@ -85,4 +88,9 @@ cmd_ffmpeg = ["ffmpeg",
 
 subprocess.run(cmd_ffmpeg, check=True)
 
-print("\nVideo creation completed.")
+print("\nVideo creation completed.\n")
+
+t1 = time.time()
+total_time = t1 - t0
+
+print(f"Total time : {total_time:.2f} s")
