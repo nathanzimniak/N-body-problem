@@ -3,7 +3,8 @@ Solving the 3D N-body problem
 
 <p align='center'>
   <br/>
-    <img src="https://raw.githubusercontent.com/nathanzimniak/N-body-problem/main/visualization/inner_solar_system_frames/animation.gif" width="300" height="300"/>
+    <img src="https://raw.githubusercontent.com/nathanzimniak/N-body-problem/main/visualization/inner_solar_system_frames/animation.gif" width="200" height="200"/>
+    <img src="https://raw.githubusercontent.com/nathanzimniak/N-body-problem/main/visualization/three_body_orbits/animation.gif" width="200" height="200"/>
   <br/>
 </p>
 
