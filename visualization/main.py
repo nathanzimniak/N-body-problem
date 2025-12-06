@@ -88,6 +88,15 @@ cmd_ffmpeg = ["ffmpeg",
 
 subprocess.run(cmd_ffmpeg, check=True)
 
+# Create GIF (simple)
+cmd_ffmpeg_gif = ["ffmpeg",
+                  "-framerate", "30",   # 30 fps recommandé pour les GIF
+                  "-i", "frame_%04d.png",
+                  "-vf", "scale=800:-1",  # optionnel: resize
+                  "animation.gif"]
+
+subprocess.run(cmd_ffmpeg_gif, check=True)
+
 print("\nVideo creation completed.\n")
 
 t1 = time.time()

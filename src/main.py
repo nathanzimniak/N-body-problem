@@ -7,7 +7,7 @@ from rhs        import compute_dudt
 from init       import load_preset
 
 # Input parameters
-preset = "three_body_orbits"
+preset = "inner_solar_system"
 config = load_preset(preset)
 
 # Define constants
