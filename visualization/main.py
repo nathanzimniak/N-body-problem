@@ -6,7 +6,7 @@ import time
 t0 = time.time()
 
 # Preset selection
-preset = "inner_solar_system"#"three_body_orbits"
+preset = "three_body_orbits"
 
 # Paths configuration
 PATH_BLENDER               = "/Applications/Blender.app/Contents/MacOS/Blender"
