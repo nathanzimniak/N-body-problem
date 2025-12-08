@@ -17,10 +17,11 @@ This project numerically integrates the equations of motion for multiple bodies 
 - `src/integrator.py`, `src/rhs.py`, `src/accelerations.py` – numerical integration routines and derivative calculations.
 - `src/bodies.py` – lightweight classes representing bodies and systems.
 - `outputs/` – CSV outputs produced by simulations (created automatically).
-- `visualization/` – example animations generated from the sample presets.
+- `visualization/` – Blender template/script plus example animations generated from the sample presets.
 
 ## Requirements
-- Python 3.8+ (uses only the standard library)
+- Python 3.8+ (with the standard library)
+- Blender and FFMPEG (only for visualization)
 
 ## Running a simulation
 1. Ensure you are in the repository root.
