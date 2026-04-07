@@ -1,5 +1,16 @@
 ### The 3D N-body problem
 
+
+<br>
+
+<p align="center">
+    <img src="https://github.com/nathanzimniak/N-body-problem/blob/main/test4.png">
+</p>
+
+<br>
+
+
+
 This simple project numerically integrates the equations of motion for multiple bodies in three-dimensional space. It includes ready-to-run presets for the inner solar system and a three-body choreography example, and can be extended with custom initial conditions.
  
 <p align='center'>
