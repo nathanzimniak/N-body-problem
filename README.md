@@ -26,7 +26,9 @@ The solver integrates the Newtonian gravitational N-body equations in three dime
 
 ### Numerical Method
 
-The current implementation relies on direct summation of pairwise gravitational interactions, resulting in an O(N²) computational complexity. While computationally expensive for large numbers of bodies, this approach is robust, simple to implement and extend. For large simulations, running the code on a HPC cluster is recommended.
+The current implementation relies on direct summation of pairwise gravitational interactions, resulting in an O(N²) computational complexity. While computationally expensive for large numbers of bodies, this approach is robust, simple to implement and extend.
+
+For large simulations, running the code on a HPC cluster is highly recommended.
 
 ---
 
