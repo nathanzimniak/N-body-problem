@@ -5,7 +5,7 @@
 <p align="center">
     A simple <strong>3D gravitational N-body solver</strong> based on <strong>direct force summation</strong> (brute-force).
     <br>
-    Written in <strong>C++</strong>, with <em>OpenMP</em> API, the codebase emphasizes performance andcode clarity over algorithmic sophistication.
+    Written in <strong>C++</strong> with the <em>OpenMP</em> API, the codebase emphasizes performance and code clarity over algorithmic sophistication.
 </p>
 
 <br>
