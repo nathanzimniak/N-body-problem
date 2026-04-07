@@ -37,7 +37,7 @@ For large simulations, running the code on a HPC cluster is highly recommended.
 Clone the repository:
 
 ```
-git clone https://github.com/nathanzimniak/n-body-problem.git
+git clone https://github.com/nathanzimniak/nbody-solver.git
 ```
 
 Build the code:
