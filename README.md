@@ -1,5 +1,12 @@
-### The 3D N-body problem
+<h2 align="center">N-Body Solver</h2>
 
+<br>
+
+<p align="center">
+    A simple <strong>3D gravitational N-body solver</strong> based on <strong>direct force summation</strong> (brute-force).
+    <br>
+    Written in <strong>C++</strong>, with <em>OpenMP</em> parallelization, the codebase emphasizes simplicity over algorithmic sophistication.
+</p>
 
 <br>
 
@@ -9,43 +16,44 @@
 
 <br>
 
+---
 
+### Physical Model
 
-This simple project numerically integrates the equations of motion for multiple bodies in three-dimensional space. It includes ready-to-run presets for the inner solar system and a three-body choreography example, and can be extended with custom initial conditions.
- 
-<p align='center'>
-    <br/>
-      <img src="https://raw.githubusercontent.com/nathanzimniak/N-body-problem/main/visualization/inner_solar_system_frames/animation.gif" width="200" height="200"/>
-      <img src="https://raw.githubusercontent.com/nathanzimniak/N-body-problem/main/visualization/three_body_orbits/animation.gif" width="200" height="200"/>
-    <br/>
- </p>
- 
-#### PROJECT STRUCTURE
-- `src/main.py`: entry point that loads a preset, integrates the system using a solver, and writes trajectories to CSV.
-- `src/init.py`: predefined presets (`inner_solar_system`, `three_body_orbits`) and a loader for custom configurations.
-- `src/integrator.py`: integrators that can be used to integrate the system.
-- `src/rhs.py`: the right-hand side (the derivatives) to integrate.
-- `src/accelerations.py`: the accelerations used in the right-hand side.
-- `src/bodies.py`: classes representing bodies and systems.
-- `outputs/`: CSV outputs produced by simulations.
-- `visualization/`: Blender template/script and example animations.
+The solver integrates the Newtonian gravitational N-body equations in three dimensions. A softening parameter is included to prevent numerical divergences during close encounters and improve numerical stability.
 
-In practice, `main.py` loads a preset from `init.py` and builds the arrays of initial masses, positions, and velocities. At each step, an integrator from `integrator.py` advances positions and velocities by evaluating the derivative via `compute_dudt()` in `rhs.py` (which calls `compute_accelerations()` to compute each body's acceleration via Newton's law of universal gravitation). Each state is added to a global trajectory, converted to `(t, body_id, x, y, z)` rows, and exported as CSV in `outputs/`, ready for visualization or animation with the Blender scripts in `visualization/`.
+---
 
-#### REQUIREMENTS
-- Python (with the standard library)
-- Blender and FFMPEG (only for visualization)
+### Numerical Methods
 
-#### RUNNING A SIMULATION
-1. Ensure you are in the repository root.
-2. Select a preset in `src/main.py` by setting `preset = "inner_solar_system"` or `preset = "three_body_orbits"`.
-3. Run the simulation:
-   ```bash
-   python src/main.py
-   ```
-4. View the generated CSV at `outputs/<preset>.csv`. Each row contains the timestamp, body index, and 3D position for every step.
+The current implementation relies on direct summation of pairwise gravitational interactions, resulting in an O(N²) computational complexity. While computationally expensive for large numbers of bodies, this approach is robust, simple to implement and extend. For large simulations, running the code on a HPC cluster is recommended.
 
-#### CREATING A NEW PRESET
-1. Open `src/init.py` and add a new function that returns a dictionary with `t_ini`, `t_end`, `N_steps`, `masses`, `positions`, and `velocities`.
-2. Register the function in the `AVAILABLE_PRESETS` dictionary.
-3. Set `preset` in `src/main.py` to your new key and run the simulation.
+---
+
+### Getting Started
+
+Clone the repository:
+
+```
+git clone https://github.com/nathanzimniak/n-body-problem.git
+```
+
+Build the code:
+
+```
+make
+```
+
+Run a simulation using a setup file from the ```setups/``` directory:
+
+```
+OMP_NUM_THREADS=4 ./main --setup galaxy
+```
+
+Outputs are saved in **HDF5** format. You can create new simulations by adding configuration files in the ```setups/``` folder.
+
+---
+
+### Contributing
+
+Contributions are welcome. Feel free to open an issue or submit a pull request if you find a bug,or  want to implement a new numerical method.
