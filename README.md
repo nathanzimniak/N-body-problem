@@ -56,4 +56,4 @@ Outputs are saved in **HDF5** format. You can create new simulations by adding c
 
 ### Contributing
 
-Contributions are welcome. Feel free to open an issue or submit a pull request if you find a bug,or  want to implement a new numerical method.
+Contributions are welcome. Feel free to open an issue or submit a pull request if you find a bug, or want to implement a new numerical method.
