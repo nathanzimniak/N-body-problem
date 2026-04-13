@@ -50,7 +50,7 @@ int run(const std::string& setup_name) {
         // Compute elapsed wall-clock time and simulation progress.
         auto now = std::chrono::high_resolution_clock::now();
         double elapsed = std::chrono::duration<double>(now - start).count();
-        double progress = t / sim.time.t_end;
+        double progress = (t - sim.time.t_start)/(sim.time.t_end - sim.time.t_start);
 
         // Display current iteration, progress, and elapsed time.
         std::cout << std::fixed
