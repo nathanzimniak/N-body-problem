@@ -11,7 +11,7 @@
 <br>
 
 <p align="center">
-    <img src="https://github.com/nathanzimniak/N-body-problem/blob/main/test4.png">
+    <img src="https://github.com/nathanzimniak/nbody-solver/blob/main/docs/images/banner.png">
 </p>
 
 <br>
