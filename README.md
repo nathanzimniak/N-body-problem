@@ -28,8 +28,6 @@ The solver integrates the Newtonian gravitational N-body equations in three dime
 
 The current implementation relies on direct summation of pairwise gravitational interactions, resulting in an O(N²) computational complexity. While computationally expensive for large numbers of bodies, this approach is robust, simple to implement and extend.
 
-For large simulations, running the code on a HPC cluster is highly recommended.
-
 ---
 
 ### Requirements
@@ -60,7 +58,7 @@ Run a simulation using a setup file from the ```setups/``` directory:
 OMP_NUM_THREADS=4 ./main --setup galaxy
 ```
 
-Outputs are saved in **HDF5** format. You can create new simulations by adding configuration files in the ```setups/``` folder.
+Outputs are saved in **HDF5** format. You can create new simulations by adding configuration files in the ```setups/``` folder. For large simulations, running the code on a HPC cluster is highly recommended.
 
 ---
 
