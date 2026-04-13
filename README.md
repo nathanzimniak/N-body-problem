@@ -34,7 +34,7 @@ For large simulations, running the code on a HPC cluster is highly recommended.
 
 ### Requirements
 
-- **Build tool**: `make`
+- **Build tool**: make
 - **Compiler**: g++-15 compiler with C++20 and OpenMP support
 - **Librairies** : HDF5
 
