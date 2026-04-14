@@ -14,31 +14,29 @@
     <img src="https://github.com/nathanzimniak/nbody-solver/blob/main/docs/images/banner.png">
 </p>
 
-<br>
+#
 
----
-
-### Physical Model
+> ### Physical Model
 
 The solver integrates the Newtonian gravitational N-body equations in three dimensions. A softening parameter is included to prevent numerical divergences during close encounters and improve numerical stability.
 
----
+#
 
-### Numerical Method
+> ### Numerical Method
 
 The current implementation relies on direct summation of pairwise gravitational interactions, resulting in an O(N²) computational complexity. While computationally expensive for large numbers of bodies, this approach is robust, simple to implement and extend.
 
----
+#
 
-### Requirements
+> ### Requirements
 
 - **Build tool**: make
 - **Compiler**: g++-15 compiler with C++20 and OpenMP support
 - **Libraries** : HDF5
 
----
+#
 
-### Getting Started
+> ### Getting Started
 
 Clone the repository:
 
@@ -60,8 +58,8 @@ OMP_NUM_THREADS=4 ./main --setup galaxy
 
 Outputs are saved in **HDF5** format. You can create new simulations by adding configuration files in the ```setups/``` folder. For large simulations, running the code on a HPC cluster is highly recommended.
 
----
+#
 
-### Contributing
+> ### Contributing
 
 Contributions are welcome. Feel free to open an issue or submit a pull request if you find a bug, or want to implement a new numerical method.
