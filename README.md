@@ -14,8 +14,6 @@
     <img src="https://github.com/nathanzimniak/nbody-solver/blob/main/docs/images/banner.png">
 </p>
 
-#
-
 > ### Physical Model
 
 The solver integrates the Newtonian gravitational N-body equations in three dimensions. A softening parameter is included to prevent numerical divergences during close encounters and improve numerical stability.
