@@ -4,7 +4,6 @@
 
 CXX = g++-15
 
-
 # =======================================================
 # ORGANISATION DES DOSSIERS
 # =======================================================
@@ -16,13 +15,11 @@ NUMERICS_DIR = $(SRC_DIR)/numerics
 PHYSICS_DIR = $(SRC_DIR)/physics
 IO_DIR = $(SRC_DIR)/io
 
-
 # =======================================================
 # INFORMATIONS GÉNÉRALES SUR LA COMPILATION
 # =======================================================
 
 TARGET = main
-
 
 # =======================================================
 # DÉTECTION AUTOMATIQUE DES FLAGS HDF5
@@ -37,7 +34,6 @@ HDF5_LFLAGS := $(shell printf '%s\n' "$(HDF5_SHOW)" | tr ' ' '\n' | grep '^-L')
 HDF5_LIBS := $(shell printf '%s\n' "$(HDF5_SHOW)" | tr ' ' '\n' | grep -E '^-l|^/.+\.(a|so|so\.[0-9.]+|dylib)$$')
 
 HDF5_LIBDIR := $(shell printf '%s\n' "$(HDF5_SHOW)" | tr ' ' '\n' | grep '^-L' | head -n1 | sed 's/^-L//')
-
 
 # =======================================================
 # OPTIONS DE COMPILATION
@@ -60,7 +56,6 @@ ifneq ($(HDF5_LIBDIR),)
 LDFLAGS += -Wl,-rpath,$(HDF5_LIBDIR)
 endif
 
-
 # =======================================================
 # LISTE DES FICHIERS SOURCE
 # =======================================================
@@ -74,13 +69,11 @@ SRC_MAIN = main.cpp \
 
 SRC = $(SRC_MAIN)
 
-
 # =======================================================
 # LISTE DES FICHIERS OBJETS
 # =======================================================
 
 OBJ = $(SRC:%.cpp=$(OBJ_DIR)/%.o)
-
 
 # =======================================================
 # CIBLES UTILITAIRES
@@ -90,14 +83,12 @@ OBJ = $(SRC:%.cpp=$(OBJ_DIR)/%.o)
 
 all: $(TARGET)
 
-
 # =======================================================
 # ÉDITION DE LIENS : FABRIQUER L’EXÉCUTABLE FINAL
 # =======================================================
 
 $(TARGET): $(OBJ)
 	$(CXX) $(OBJ) $(LDFLAGS) $(HDF5_LIBS) -o $@
-
 
 # =======================================================
 # RÈGLE DE COMPILATION : .cpp --> .o
@@ -106,15 +97,6 @@ $(TARGET): $(OBJ)
 $(OBJ_DIR)/%.o: %.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
-
-
-# =======================================================
-# CIBLE D’EXÉCUTION
-# =======================================================
-
-run: $(TARGET)
-	./$(TARGET)
-
 
 # =======================================================
 # CIBLE DE NETTOYAGE
