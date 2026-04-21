@@ -51,6 +51,11 @@ make
 ```
 
 Run a simulation using a setup file from the ```setups/``` directory:
+```
+OMP_NUM_THREADS=<num_threads> mpirun -np <num_processes> ./main --setup <setup>
+```
+
+For example:
 
 ```
 OMP_NUM_THREADS=3 mpirun -np 2 ./main --setup galaxy
