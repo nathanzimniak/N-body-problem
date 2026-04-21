@@ -1,10 +1,14 @@
-#include "solver.hpp"
-#include "setups.hpp"
-#include "nbody_problem.hpp"
 #include "io.hpp"
+#include "nbody_problem.hpp"
+#include "setups.hpp"
+#include "solver.hpp"
+
 #include <mpi.h>
-#include <iostream>
+
 #include <iomanip>
+#include <iostream>
+#include <unordered_map>
+#include <vector>
 
 
 std::unordered_map<std::string, SetupFunction>& setup_registry() {
@@ -18,106 +22,90 @@ SetupRegistrar::SetupRegistrar(const std::string& name, SetupFunction func) {
 }
 
 
-int run(
-    const std::string& setup_name
-) {
-    // Start wall-clock timing.
+int run(const std::string& setup_name) {
+    // Synchronize all processes before starting the timer.
     MPI_Barrier(MPI_COMM_WORLD);
-    double start = MPI_Wtime();
 
-    // Total number of processes in the global communicator.
-    int size;
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    // Start wall-clock timing.
+    const double start_wtime = MPI_Wtime();
 
-	// Process rank.
-	int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    // Get total number of processes and current process rank.
+    int num_proc;
+    int rank_proc;
+    MPI_Comm_size(MPI_COMM_WORLD, &num_proc);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank_proc);
 
-    // Look up the requested setup in the global registry.
+    // Find the requested simulation setup in the global registry.
     auto& registry = setup_registry();
-    auto setup_entry = registry.find(setup_name);
+    const auto setup_iterator = registry.find(setup_name);
 
-    // Stop if the requested setup is not registered.
-    if (setup_entry == registry.end()) {
-        if (rank == 0) {
+    // Stop if the setup name is not registered.
+    if (setup_iterator == registry.end()) {
+        if (rank_proc == 0) {
             std::cerr << "Unknown setup: " << setup_name << '\n';
         }
         return 1;
     }
 
-    // Extract setup function from registry.
-    SetupFunction setup_function = setup_entry->second;
-
-    // Build simulation using selected setup.
+    // Create the simulation from the selected setup function.
+    const SetupFunction setup_function = setup_iterator->second;
     Simulation sim = setup_function();
 
-    // Number of bodies in the simulation.
-    const std::size_t N = sim.bodies.x.size();
+    // Total number of bodies in the simulation.
+    const int num_bodies = sim.state.x.size();
 
-
-
-
-
-
-
-    //
-    std::vector<int> counts(size), displs(size);
-
-    for (int r = 0; r < size; ++r) {
-        counts[r] = N / size + (r < (N % size) ? 1 : 0);
+    // Number of bodies handled by each process.
+    std::vector<int> counts(num_proc);
+    for (int rank = 0; rank < num_proc; ++rank) {
+        counts[rank] = num_bodies / num_proc + (rank < (num_bodies % num_proc) ? 1 : 0);
     }
 
-    displs[0] = 0;
-    for (int r = 1; r < size; ++r) {
-        displs[r] = displs[r - 1] + counts[r - 1];
+    // Starting index (offset) of each process's data in the global array.
+    std::vector<int> displacements(num_proc);
+    displacements[0] = 0;
+    for (int rank = 1; rank < num_proc; ++rank) {
+        displacements[rank] = displacements[rank - 1] + counts[rank - 1];
     }
 
-    // Contexte MPI explicite (Option A)
-    MPIContext mpi_ctx{
-        .rank = rank,
-        .size = size,
+    // MPI distribution metadata for domain decomposition.
+    const MPIContext mpi_context{
+        .rank = rank_proc,
+        .size = num_proc,
         .counts = counts,
-        .displs = displs
+        .displacements = displacements
     };
-    //
 
+    // Simulation time and iteration counter.
+    double current_time = sim.time.start;
+    int current_step = 0;
 
-
-
-
-    // Time and iteration counter.
-    double t = sim.time.t_start;
-    int n = 0;
-
-    // Time integration loop.
-    while (t <= sim.time.t_end) {
-
-        // Compute elapsed wall-clock time and simulation progress.
-        double now = MPI_Wtime();
-        double elapsed = (now - start);
-        double progress = (t - sim.time.t_start)/(sim.time.t_end - sim.time.t_start);
-
-	    if (rank == 0) {
-            //// Display current iteration, progress, and elapsed time.
+    // Main time integration loop.
+    while (current_time <= sim.time.end) {
+        // Elapsed wall-clock time and simulation progress.
+        const double current_wtime = MPI_Wtime();
+        const double elapsed_wtime = current_wtime - start_wtime;
+        const double progress = (current_time - sim.time.start)/(sim.time.end - sim.time.start);
+    
+        if (rank_proc == 0) {
+            // Display current iteration, progress, and elapsed wall-clock time.
             std::cout << std::fixed
-                      << "Iteration " << std::setw(6) << n
+                      << "Iteration " << std::setw(6) << current_step
                       << " | Progress " << std::setprecision(1) << (100.0 * progress) << "%"
-                      << " | Elapsed time " << std::setprecision(1) << elapsed << " s"
-                      << "\n";
+                      << " | Elapsed time " << std::setprecision(1) << elapsed_wtime << " s"
+                      << '\n';
 
-            // Save the simulation state at the configured frequency.
-            if (n % sim.save.frequency == 0) {
-                save_state_hdf5(sim.bodies, n, t, sim.save.directory);
+            // Save the simulation state at the configured interval.
+            if (current_step % sim.save.frequency == 0) {
+                save_state_hdf5(sim.state, current_step, current_time, sim.save.directory);
             }
-
-	    }
+        }
 
         // Advance the simulation by one time step.
-        sim.integrator(nbody_rhs, sim.bodies, sim.time.dt, sim.params, mpi_ctx);
+        sim.integrator(nbody_rhs, sim.state, sim.time.step, sim.params, mpi_context);
 
-        // Update time and iteration counter.
-        t += sim.time.dt;
-        n++;
+        // Update simulation time and iteration count.
+        current_time += sim.time.step;
+        current_step++;
     }
     
     return 0;

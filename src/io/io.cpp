@@ -1,61 +1,72 @@
 #include "io.hpp"
-#include <hdf5.h>
-#include <filesystem>
-#include <cstdio>
-#include <vector>
-#include <string>
 
+#include <hdf5.h>
+
+#include <cstdio>
+#include <filesystem>
+#include <string>
+#include <vector>
 
 void save_state_hdf5(
-    const State& U,
+    const State& state,
     int step,
-    double t,
-    const std::string& path
+    double time,
+    const std::string& output_path
 ) {
-    // Create the directory if it doesn't exist (does nothing if it already exists).
-    std::filesystem::create_directories(path);
+    // Create the output directory if it does not already exist.
+    std::filesystem::create_directories(output_path);
 
-    // Construct the complete file path.
+    // Construct the output file path for the current step.
     char filename[64];
     std::snprintf(filename, sizeof(filename), "output_%06d.h5", step);
-    std::string filepath = path + "/" + filename;
+    const std::string file_path = output_path + "/" + filename;
 
-    // Open (create) the file for this iteration.
-    hid_t file_id = H5Fcreate(filepath.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+    // Create the HDF5 file for this iteration.
+    const hid_t file_id = H5Fcreate(file_path.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 
-    // Size of the arrays to write.
-    hsize_t N = U.x.size();
-    hid_t dataspace_id = H5Screate_simple(1, &N, nullptr);
+    // Define the dataspace shared by all state vectors.
+    const hsize_t num_bodies = state.x.size();
+    const hid_t dataspace_id = H5Screate_simple(1, &num_bodies, nullptr);
 
-    // Local lambda function to write a dataset.
-    auto write_dataset = [&](const std::string& name, const std::vector<double>& data) {
-        hid_t dataset_id = H5Dcreate2(file_id, name.c_str(),
-                                       H5T_NATIVE_DOUBLE, dataspace_id,
-                                       H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-        H5Dwrite(dataset_id, H5T_NATIVE_DOUBLE,
-                 H5S_ALL, H5S_ALL, H5P_DEFAULT, data.data());
+    // Write one vector-valued dataset to the file.
+    const auto write_dataset = [&](const std::string& dataset_name, const std::vector<double>& data) {
+        const hid_t dataset_id = H5Dcreate2(
+            file_id,
+            dataset_name.c_str(),
+            H5T_NATIVE_DOUBLE,
+            dataspace_id,
+            H5P_DEFAULT,
+            H5P_DEFAULT,
+            H5P_DEFAULT
+        );
+        H5Dwrite(dataset_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, data.data());
         H5Dclose(dataset_id);
     };
 
     // Write each component of the state.
-    write_dataset("x",  U.x);
-    write_dataset("y",  U.y);
-    write_dataset("z",  U.z);
-    write_dataset("vx", U.vx);
-    write_dataset("vy", U.vy);
-    write_dataset("vz", U.vz);
+    write_dataset("x", state.x);
+    write_dataset("y", state.y);
+    write_dataset("z", state.z);
+    write_dataset("vx", state.vx);
+    write_dataset("vy", state.vy);
+    write_dataset("vz", state.vz);
 
-    // Write the current time as an attribute of the file.
-    hsize_t scalar = 1;
-    hid_t scalar_space = H5Screate_simple(1, &scalar, nullptr);
-    hid_t attr_id = H5Acreate2(file_id, "time",
-                                H5T_NATIVE_DOUBLE, scalar_space,
-                                H5P_DEFAULT, H5P_DEFAULT);
-    H5Awrite(attr_id, H5T_NATIVE_DOUBLE, &t);
-    H5Aclose(attr_id);
-    H5Sclose(scalar_space);
+    // Write the current simulation time as a file attribute.
+    const hsize_t attribute_size = 1;
+    const hid_t attribute_space_id = H5Screate_simple(1, &attribute_size, nullptr);
+    const hid_t attribute_id = H5Acreate2(
+        file_id,
+        "time",
+        H5T_NATIVE_DOUBLE,
+        attribute_space_id,
+        H5P_DEFAULT,
+        H5P_DEFAULT
+    );
+    H5Awrite(attribute_id, H5T_NATIVE_DOUBLE, &time);
+    H5Aclose(attribute_id);
+    H5Sclose(attribute_space_id);
 
-    // Close the resources.
+    // Release HDF5 resources.
     H5Sclose(dataspace_id);
     H5Fclose(file_id);
 }

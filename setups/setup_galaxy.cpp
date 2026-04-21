@@ -1,170 +1,178 @@
-#include "solver.hpp"
 #include "setups.hpp"
+#include "solver.hpp"
 #include "time_integrators.hpp"
+
 #include <cmath>
 #include <random>
 
 
-static double random_double(
-    double min,
-    double max
-) {
-    // Create a random number generator
+static double random_double(double min, double max) {
+    // Create a random number generator.
     static std::mt19937 gen(std::random_device{}());
 
-    // Define a uniform distribution between min and max.
+    // Define a uniform distribution between the requested bounds.
     std::uniform_real_distribution<> dist(min, max);
 
     return dist(gen);
 }
 
 
-Simulation setup_galaxy(
-) {
-    // Number of bodies.
-    const std::size_t n_bodies = 1000;
+Simulation setup_galaxy() {
+    // Total number of bodies in the simulation.
+    const int num_bodies = 1000;
 
     // Physical parameters.
-    const double G = 1.0;                             // Gravitational constant.
-    const double eps = 0.1;                           // Softening parameter.
-    std::vector<double> mass(n_bodies, 1.0/n_bodies); // Masses of the bodies.
+    const double gravitational_constant = 1.0;
+    const double softening_factor = 0.1;
+    const std::vector<double> masses(num_bodies, 1.0/num_bodies);
 
-    Params params {
-        .G    = G,
-        .eps  = eps,
-        .mass = mass
+    const Params params{
+        .gravitational_constant = gravitational_constant,
+        .softening_factor = softening_factor,
+        .masses = masses
     };
 
     // Time parameters.
-    const double t_start = 0.0;   // Initial time.
-    const double t_end   = 3.0;   // Final time.
-    const double dt      = 0.001; // Time step.
+    const double start_time = 0.0;
+    const double end_time = 3.0;
+    const double time_step = 1e-3;
 
-    TimeConfig time {
-        .t_start = t_start,
-        .t_end   = t_end,
-        .dt      = dt
+    const TimeConfig time{
+        .start = start_time,
+        .end = end_time,
+        .step = time_step
     };
 
     // Initial conditions.
-    State bodies {
-        .x  = std::vector<double>(n_bodies),
-        .y  = std::vector<double>(n_bodies),
-        .z  = std::vector<double>(n_bodies),
-        .vx = std::vector<double>(n_bodies),
-        .vy = std::vector<double>(n_bodies),
-        .vz = std::vector<double>(n_bodies)
+    State state{
+        .x = std::vector<double>(num_bodies),
+        .y = std::vector<double>(num_bodies),
+        .z = std::vector<double>(num_bodies),
+        .vx = std::vector<double>(num_bodies),
+        .vy = std::vector<double>(num_bodies),
+        .vz = std::vector<double>(num_bodies)
     };
 
-    const double R_d   = 2.0;   // Disk scale radius.
-    const double z0    = 0.08;  // Disk thickness.
-    const double r_max = 10.0;  // Radial cutoff.
+    // Disk scale radius, disk thickness, and radial cutoff.
+    const double disk_scale_radius = 2.0;
+    const double disk_half_thickness = 0.08;
+    const double max_radius = 10.0;
     constexpr double pi = 3.14159265358979323846;
 
     // Total mass.
-    double M_total = 0.0;
-    for (std::size_t i = 0; i < n_bodies; ++i) {
-        M_total += mass[i];
+    double total_mass = 0.0;
+    for (int i = 0; i < num_bodies; i++) {
+        total_mass += masses[i];
     }
 
-    for (std::size_t i = 0; i < n_bodies; ++i) {
-
-        // Exponential disk radius sampling with rejection.
-        double r = 0.0;
+    // Generate disk-like initial conditions.
+    for (int i = 0; i < num_bodies; i++) {
+        // Sample a radius from an exponential disk with rejection beyond max_radius.
+        double radius = 0.0;
         while (true) {
-            double u = random_double(0.0, 1.0);
-            r = -R_d * std::log(1.0 - u);
-            if (r < r_max) break;
+            const double u = random_double(0.0, 1.0);
+            radius = -disk_scale_radius * std::log(1.0 - u);
+            if (radius < max_radius) {
+                break;
+            }
         }
 
-        double phi = random_double(0.0, 2.0 * pi);
+        const double phi = random_double(0.0, 2.0 * pi);
 
-        // Perturbation m=2 to seed non-axisymmetric structure.
-        double perturb = 1.0 + 0.05 * std::cos(2.0 * phi);
-            
-        // Thin disk geometry.
-        bodies.x[i] = perturb * r * std::cos(phi);
-        bodies.y[i] = perturb * r * std::sin(phi);
-        bodies.z[i] = random_double(-z0, z0);
+        // m = 2 perturbation to seed non-axisymmetric structure.
+        const double perturbation = 1.0 + 0.05 * std::cos(2.0 * phi);
 
-        // Simple enclosed mass model for disk-like rotation curve.
-        double M_enc = M_total * (1.0 - std::exp(-r / R_d) * (1.0 + r / R_d));
+        // Thin-disk geometry.
+        state.x[i] = perturbation * radius * std::cos(phi);
+        state.y[i] = perturbation * radius * std::sin(phi);
+        state.z[i] = random_double(-disk_half_thickness, disk_half_thickness);
+
+        // Simple enclosed-mass model for a disk-like rotation curve.
+        const double enclosed_mass =
+            total_mass * (1.0 - std::exp(-radius / disk_scale_radius) * (1.0 + radius / disk_scale_radius));
 
         // Circular speed.
-        double v_c = std::sqrt(G * M_enc / std::max(r, 1e-3));
+        const double circular_speed =
+            std::sqrt(gravitational_constant * enclosed_mass / std::max(radius, 1e-3));
 
-        // Add a little velocity dispersion to seed spiral structure.
-        double sigma_r   = 0.04 * v_c;
-        double sigma_phi = 0.025 * v_c;
-        double sigma_z   = 0.012 * v_c;
+        // Add a small velocity dispersion to seed spiral structure.
+        const double radial_dispersion = 0.04 * circular_speed;
+        const double azimuthal_dispersion = 0.025 * circular_speed;
+        const double vertical_dispersion = 0.012 * circular_speed;
 
-        // Basis vectors.
-        double erx = std::cos(phi);
-        double ery = std::sin(phi);
-        double epx = -std::sin(phi);
-        double epy =  std::cos(phi);
+        // Polar basis vectors in the disk plane.
+        const double radial_x = std::cos(phi);
+        const double radial_y = std::sin(phi);
+        const double azimuthal_x = -std::sin(phi);
+        const double azimuthal_y = std::cos(phi);
 
         // Small spiral seed in azimuthal velocity.
-        double spiral_seed = 1.0 + 0.05 * std::cos(2.0 * phi);
+        const double spiral_seed = 1.0 + 0.05 * std::cos(2.0 * phi);
 
-        double v_r   = random_double(-sigma_r, sigma_r);
-        double v_phi = v_c * spiral_seed + random_double(-sigma_phi, sigma_phi);
-        double v_z   = random_double(-sigma_z, sigma_z);
+        const double radial_velocity = random_double(-radial_dispersion, radial_dispersion);
+        const double azimuthal_velocity =
+            circular_speed * spiral_seed + random_double(-azimuthal_dispersion, azimuthal_dispersion);
+        const double vertical_velocity = random_double(-vertical_dispersion, vertical_dispersion);
 
-        bodies.vx[i] = v_r * erx + v_phi * epx;
-        bodies.vy[i] = v_r * ery + v_phi * epy;
-        bodies.vz[i] = v_z;
+        state.vx[i] = radial_velocity * radial_x + azimuthal_velocity * azimuthal_x;
+        state.vy[i] = radial_velocity * radial_y + azimuthal_velocity * azimuthal_y;
+        state.vz[i] = vertical_velocity;
     }
 
-    double x_cm = 0.0, y_cm = 0.0, z_cm = 0.0;
-    double vx_cm = 0.0, vy_cm = 0.0, vz_cm = 0.0;
+    // Compute the center-of-mass position and velocity.
+    double x_cm = 0.0;
+    double y_cm = 0.0;
+    double z_cm = 0.0;
+    double vx_cm = 0.0;
+    double vy_cm = 0.0;
+    double vz_cm = 0.0;
 
-    for (std::size_t i = 0; i < n_bodies; ++i) {
-        x_cm  += mass[i] * bodies.x[i];
-        y_cm  += mass[i] * bodies.y[i];
-        z_cm  += mass[i] * bodies.z[i];
-        vx_cm += mass[i] * bodies.vx[i];
-        vy_cm += mass[i] * bodies.vy[i];
-        vz_cm += mass[i] * bodies.vz[i];
+    for (int i = 0; i < num_bodies; i++) {
+        x_cm += masses[i] * state.x[i];
+        y_cm += masses[i] * state.y[i];
+        z_cm += masses[i] * state.z[i];
+        vx_cm += masses[i] * state.vx[i];
+        vy_cm += masses[i] * state.vy[i];
+        vz_cm += masses[i] * state.vz[i];
     }
 
-    x_cm  /= M_total;
-    y_cm  /= M_total;
-    z_cm  /= M_total;
-    vx_cm /= M_total;
-    vy_cm /= M_total;
-    vz_cm /= M_total;
+    x_cm /= total_mass;
+    y_cm /= total_mass;
+    z_cm /= total_mass;
+    vx_cm /= total_mass;
+    vy_cm /= total_mass;
+    vz_cm /= total_mass;
 
-    for (std::size_t i = 0; i < n_bodies; ++i) {
-        bodies.x[i]  -= x_cm;
-        bodies.y[i]  -= y_cm;
-        bodies.z[i]  -= z_cm;
-        bodies.vx[i] -= vx_cm;
-        bodies.vy[i] -= vy_cm;
-        bodies.vz[i] -= vz_cm;
+    // Shift to the center-of-mass frame.
+    for (int i = 0; i < num_bodies; i++) {
+        state.x[i] -= x_cm;
+        state.y[i] -= y_cm;
+        state.z[i] -= z_cm;
+        state.vx[i] -= vx_cm;
+        state.vy[i] -= vy_cm;
+        state.vz[i] -= vz_cm;
     }
 
     // Time integrator.
-    Integrator integrator = rk4;
+    const Integrator integrator = rk4;
 
     // Save configuration.
-    const std::string directory = "./outputs/galaxy"; // Output directory for the HDF5 files.
-    const int output_frequency = 50;                  // Save frequency.
+    const std::string output_directory = "./outputs/galaxy";
+    const int save_frequency = 50;
 
-    SaveConfig save {
-        .directory = directory,
-        .frequency = output_frequency
+    const SaveConfig save{
+        .directory = output_directory,
+        .frequency = save_frequency
     };
 
-    return Simulation {
-        .bodies      = bodies,
-        .params      = params,
-        .time        = time,
-        .integrator  = integrator,
-        .save        = save,
+    return Simulation{
+        .state = state,
+        .params = params,
+        .time = time,
+        .integrator = integrator,
+        .save = save,
     };
 }
-
 
 // Register the setup in the global registry at program startup.
 SetupRegistrar register_galaxy("galaxy", setup_galaxy);

@@ -1,11 +1,10 @@
 #pragma once
 
-#include <vector>
 #include <string>
-
+#include <vector>
 
 /**
- * @brief Structure for the state of an N-body system.
+ * @brief Stores the full state of an N-body system.
  */
 struct State {
     std::vector<double> x;
@@ -18,71 +17,73 @@ struct State {
 
 
 /**
- * @brief Structure for the physical parameters.
+ * @brief Stores the physical parameters used by the simulation.
  */
 struct Params {
-    double G;
-    double eps;
-    std::vector<double> mass;
+    const double gravitational_constant;
+    const double softening_factor;
+    const std::vector<double> masses;
 };
 
 
 /**
- * @brief Structure for the MPI context.
+ * @brief Stores MPI-related execution context.
  */
 struct MPIContext {
-    int rank;
-    int size;
-    std::vector<int> counts;
-    std::vector<int> displs;
+    const int rank;
+    const int size;
+    const std::vector<int> counts;
+    const std::vector<int> displacements;
 };
 
 
 /**
- * @brief Function pointer types for the RHS and integrator functions.
+ * @brief Function pointer type for the right-hand side evaluation.
  */
 using RHSFunction = State (*)(const State&, const Params&, const MPIContext&);
+
+
+/**
+ * @brief Function pointer type for the time integrator.
+ */
 using Integrator = void (*)(RHSFunction, State&, double, const Params&, const MPIContext&);
 
 
 /**
- * @brief Structure for the time configuration.
+ * @brief Stores the time parameters used by the simulation.
  */
 struct TimeConfig {
-    double t_start;
-    double t_end;
-    double dt;
+    const double start;
+    const double end;
+    const double step;
 };
 
 
 /**
- * @brief Structure for the save configuration.
+ * @brief Stores the output parameters.
  */
 struct SaveConfig {
-    std::string directory;
-    int frequency;
+    const std::string directory;
+    const int frequency;
 };
 
 
 /**
- * @brief Structure to hold the entire simulation configuration.
+ * @brief Stores all the state and configuration required to run a simulation.
  */
 struct Simulation {
-    State bodies;
-    Params params;
-    TimeConfig time;
-    Integrator integrator;
-    SaveConfig save;
+    State state;
+    const Params params;
+    const TimeConfig time;
+    const Integrator integrator;
+    const SaveConfig save;
 };
 
 
 /**
- * @brief Function to run a simulation.
+ * @brief Runs a simulation for the specified setup.
  *
- * @param[in] setup_name Name of the setup to run.
- * 
- * @return 0/1 Exit code.
+ * @param setup_name Name of the simulation setup to run.
+ * @return Exit code: 0 on success, 1 on failure.
  */
-int run(
-    const std::string& setup_name
-);
+int run(const std::string& setup_name);

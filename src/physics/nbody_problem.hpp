@@ -4,15 +4,15 @@
 
 
 /**
- * @brief Function to compute the RHS of the n-body problem ODE system.
+ * @brief Computes the right-hand side of the N-body ODE system.
  *
- * @param[in] U      State variables of the system.
- * @param[in] params Physical parameters.
- * 
- * @return dUdt      RHS of the ODE system.
+ * @param state State variables of the system.
+ * @param params Physical parameters.
+ * @param mpi_context MPI execution context.
+ * @return Right-hand side of the ODE system.
  */
 State nbody_rhs(
-    const State& U,
+    const State& state,
     const Params& params,
-    const MPIContext& mpi_ctx
+    const MPIContext& mpi_context
 );

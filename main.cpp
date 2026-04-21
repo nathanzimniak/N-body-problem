@@ -1,5 +1,7 @@
 #include "solver.hpp"
+
 #include <mpi.h>
+
 #include <iostream>
 #include <string>
 
@@ -33,7 +35,7 @@ int main(
         }
     }
 
-    // Run the simulation.
+    // Run the simulation if argument parsing succeeded.
     if (exit_code == 0) {
         exit_code = run(setup_name);
     }

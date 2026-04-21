@@ -4,34 +4,36 @@
 
 
 /**
- * @brief Advance the simulation state by one explicit Euler time step.
+ * @brief Advances the simulation state by one explicit Euler time step.
  *
- * @param[in]     rhs    Right-hand side of the governing equations.
- * @param[in,out] U      State variables of the system.
- * @param[in]     dt     Time-step size.
- * @param[in]     params Physical parameters.
- **/
+ * @param rhs Right-hand side of the governing equations.
+ * @param state State variables of the system.
+ * @param timestep Time step size.
+ * @param params Physical parameters.
+ * @param mpi_context MPI execution context.
+ */
 void euler_explicit(
     RHSFunction rhs,
-    State& U,
-    double dt,
+    State& state,
+    double timestep,
     const Params& params,
-    const MPIContext& mpi_ctx
+    const MPIContext& mpi_context
 );
 
 
 /**
- * @brief Advance the simulation state by one RK4 time step.
+ * @brief Advances the simulation state by one Runge-Kutta 4 time step.
  *
- * @param[in]     rhs    Right-hand side of the governing equations.
- * @param[in,out] U      State variables of the system.
- * @param[in]     dt     Time-step size.
- * @param[in]     params Physical parameters.
- **/
+ * @param rhs Right-hand side of the governing equations.
+ * @param state State variables of the system.
+ * @param timestep Time step size.
+ * @param params Physical parameters.
+ * @param mpi_context MPI execution context.
+ */
 void rk4(
     RHSFunction rhs,
-    State& U,
-    double dt,
+    State& state,
+    double timestep,
     const Params& params,
-    const MPIContext& mpi_ctx
+    const MPIContext& mpi_context
 );

@@ -1,88 +1,85 @@
-#include "solver.hpp"
 #include "setups.hpp"
+#include "solver.hpp"
 #include "time_integrators.hpp"
 
-
-Simulation setup_eight(
-) {
-    // Number of bodies.
-    const std::size_t n_bodies = 3;
+Simulation setup_eight() {
+    // Total number of bodies in the simulation.
+    const int num_bodies = 3;
 
     // Physical parameters.
-    const double G   = 1.0;                  // Gravitational constant.
-    const double eps = 1e-3;                 // Very small softening to preserve the figure-eight orbit.
-    std::vector<double> mass(n_bodies, 1.0); // Equal masses.
+    const double gravitational_constant = 1.0;
+    const double softening_factor = 1e-3;
+    const std::vector<double> masses(num_bodies, 1.0);
 
-    Params params {
-        .G    = G,
-        .eps  = eps,
-        .mass = mass
+    const Params params{
+        .gravitational_constant = gravitational_constant,
+        .softening_factor = softening_factor,
+        .masses = masses
     };
 
     // Time parameters.
-    const double t_start = 0.0;  // Initial time.
-    const double t_end   = 20.0; // Final time.
-    const double dt      = 1e-4; // Small time step for good orbit preservation.
+    const double start_time = 0.0;
+    const double end_time = 20.0;
+    const double time_step = 1e-4;
 
-    TimeConfig time {
-        .t_start = t_start,
-        .t_end   = t_end,
-        .dt      = dt
+    const TimeConfig time{
+        .start = start_time,
+        .end = end_time,
+        .step = time_step
     };
 
     // Initial conditions.
-    State bodies {
-        .x  = std::vector<double>(n_bodies),
-        .y  = std::vector<double>(n_bodies),
-        .z  = std::vector<double>(n_bodies),
-        .vx = std::vector<double>(n_bodies),
-        .vy = std::vector<double>(n_bodies),
-        .vz = std::vector<double>(n_bodies)
+    State state{
+        .x = std::vector<double>(num_bodies),
+        .y = std::vector<double>(num_bodies),
+        .z = std::vector<double>(num_bodies),
+        .vx = std::vector<double>(num_bodies),
+        .vy = std::vector<double>(num_bodies),
+        .vz = std::vector<double>(num_bodies)
     };
 
     // Standard figure-eight initial conditions (equal-mass three-body choreography).
-    bodies.x[0]  =  0.97000436;
-    bodies.y[0]  = -0.24308753;
-    bodies.z[0]  =  0.0;
-    bodies.vx[0] =  0.4662036850;
-    bodies.vy[0] =  0.4323657300;
-    bodies.vz[0] =  0.0;
+    state.x[0] = 0.97000436;
+    state.y[0] = -0.24308753;
+    state.z[0] = 0.0;
+    state.vx[0] = 0.4662036850;
+    state.vy[0] = 0.4323657300;
+    state.vz[0] = 0.0;
 
-    bodies.x[1]  = -0.97000436;
-    bodies.y[1]  =  0.24308753;
-    bodies.z[1]  =  0.0;
-    bodies.vx[1] =  0.4662036850;
-    bodies.vy[1] =  0.4323657300;
-    bodies.vz[1] =  0.0;
+    state.x[1] = -0.97000436;
+    state.y[1] = 0.24308753;
+    state.z[1] = 0.0;
+    state.vx[1] = 0.4662036850;
+    state.vy[1] = 0.4323657300;
+    state.vz[1] = 0.0;
 
-    bodies.x[2]  =  0.0;
-    bodies.y[2]  =  0.0;
-    bodies.z[2]  =  0.0;
-    bodies.vx[2] = -0.93240737;
-    bodies.vy[2] = -0.86473146;
-    bodies.vz[2] =  0.0;
+    state.x[2] = 0.0;
+    state.y[2] = 0.0;
+    state.z[2] = 0.0;
+    state.vx[2] = -0.93240737;
+    state.vy[2] = -0.86473146;
+    state.vz[2] = 0.0;
 
     // Time integrator.
-    Integrator integrator = rk4;
+    const Integrator integrator = rk4;
 
     // Save configuration.
-    const std::string directory = "./outputs/eight"; // Output directory for the HDF5 files.
-    const int output_frequency = 50;                 // Save frequency.
+    const std::string output_directory = "./outputs/eight";
+    const int save_frequency = 50;
 
-    SaveConfig save {
-        .directory = directory,
-        .frequency = output_frequency
+    const SaveConfig save{
+        .directory = output_directory,
+        .frequency = save_frequency
     };
 
-    return Simulation {
-        .bodies      = bodies,
-        .params      = params,
-        .time        = time,
-        .integrator  = integrator,
-        .save        = save,
+    return Simulation{
+        .state = state,
+        .params = params,
+        .time = time,
+        .integrator = integrator,
+        .save = save,
     };
 }
-
 
 // Register the setup in the global registry at program startup.
 SetupRegistrar register_eight("eight", setup_eight);

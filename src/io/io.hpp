@@ -4,16 +4,16 @@
 
 
 /**
- * @brief Save the current state of the system to an HDF5 file.
+ * @brief Saves the current system state to an HDF5 file.
  *
- * @param[in] U    Current state of the system.
- * @param[in] step Current iteration number.
- * @param[in] t    Current time.
- * @param[in] path Output directory for the HDF5 files.
+ * @param state Current state of the system.
+ * @param step Current iteration number.
+ * @param time Current simulation time.
+ * @param output_path Output directory for the HDF5 files.
  */
 void save_state_hdf5(
-    const State& U,
+    const State& state,
     int step,
-    double t,
-    const std::string& path
+    double time,
+    const std::string& output_path
 );
