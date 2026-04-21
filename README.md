@@ -24,15 +24,15 @@ The solver integrates the Newtonian gravitational N-body equations in three dime
 
 > ### Numerical Method
 
-The current implementation relies on direct summation of pairwise gravitational interactions, resulting in an O(N²) computational complexity. While computationally expensive for large numbers of bodies, this approach is robust, simple to implement and extend.
+The current implementation relies on direct summation of pairwise gravitational interactions, resulting in an O(N²) computational complexity. While computationally expensive for large numbers of bodies, this approach is robust, simple to implement, and easy to extend.
 
 #
 
 > ### Requirements
 
 - **Build tool**: make
-- **Compiler**: g++-15 compiler with C++20 and OpenMP support
-- **Libraries** : MPI, HDF5
+- **Compiler**: g++-15 with C++20 and OpenMP support
+- **Libraries**: MPI, HDF5
 
 #
 
@@ -56,10 +56,10 @@ Run a simulation using a setup file from the ```setups/``` directory:
 OMP_NUM_THREADS=3 mpirun -np 2 ./main --setup galaxy
 ```
 
-Outputs are saved in **HDF5** format. You can create new simulations by adding configuration files in the ```setups/``` folder. For large simulations, running the code on a HPC cluster is highly recommended.
+Outputs are saved in **HDF5** format. You can create new simulations by adding configuration files in the ```setups/``` folder. For large simulations, running the code on an HPC cluster is highly recommended.
 
 #
 
 > ### Contributing
 
-Contributions are welcome. Feel free to open an issue or submit a pull request if you find a bug, or want to implement a new numerical method.
+Contributions are welcome. Feel free to open an issue or submit a pull request if you find a bug or if you want to implement a new numerical method.
