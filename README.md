@@ -5,7 +5,7 @@
 <p align="center">
     A simple <strong>3D gravitational N-body solver</strong> based on <strong>direct force summation</strong> (brute-force).
     <br>
-    Written in <strong>C++</strong> using the <strong>OpenMP</strong> API.
+    Written in <strong>C++</strong> using the <strong>OpenMP</strong> API and the MPI library.
 </p>
 
 <br>
@@ -32,7 +32,7 @@ The current implementation relies on direct summation of pairwise gravitational 
 
 - **Build tool**: make
 - **Compiler**: g++-15 compiler with C++20 and OpenMP support
-- **Libraries** : HDF5
+- **Libraries** : MPI, HDF5
 
 #
 
@@ -53,7 +53,7 @@ make
 Run a simulation using a setup file from the ```setups/``` directory:
 
 ```
-OMP_NUM_THREADS=4 ./main --setup galaxy
+OMP_NUM_THREADS=3 mpirun -np 2 ./main --setup galaxy
 ```
 
 Outputs are saved in **HDF5** format. You can create new simulations by adding configuration files in the ```setups/``` folder. For large simulations, running the code on a HPC cluster is highly recommended.
