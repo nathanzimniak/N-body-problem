@@ -1,5 +1,5 @@
 #include "solver.hpp"
-
+#include <mpi.h>
 #include <iostream>
 #include <string>
 
@@ -8,7 +8,13 @@ int main(
     int argc,
     char* argv[]
 ) {
-    // Declare setup name with default value (can be overridden via CLI).
+    // Initialize the MPI execution environment.
+    MPI_Init(&argc, &argv);
+
+    // Exit code.
+    int exit_code = 0;
+
+    // Setup name (default value can be overridden via CLI).
     std::string setup_name = "random";
 
     // Iterate over command-line arguments, ignoring argv[0] (program name).
@@ -22,12 +28,18 @@ int main(
         }
         else {
             std::cerr << "Unknown argument: " << arg << '\n';
-            return 1;
+            exit_code = 1;
+            break;
         }
     }
 
     // Run the simulation.
-    int result = run(setup_name);
+    if (exit_code == 0) {
+        exit_code = run(setup_name);
+    }
 
-    return result;
+    // Finalize the MPI environment and release associated resources.
+    MPI_Finalize();
+
+    return exit_code;
 }

@@ -22,6 +22,20 @@ IO_DIR = $(SRC_DIR)/io
 TARGET = main
 
 # =======================================================
+# DÉTECTION AUTOMATIQUE DES FLAGS MPI
+# =======================================================
+
+MPI_SHOW := $(shell mpicxx --showme:compile) $(shell mpicxx --showme:link)
+
+MPI_CFLAGS := $(shell printf '%s\n' "$(MPI_SHOW)" | tr ' ' '\n' | grep '^-I')
+
+MPI_LFLAGS := $(shell printf '%s\n' "$(MPI_SHOW)" | tr ' ' '\n' | grep '^-L')
+
+MPI_LIBS := $(shell printf '%s\n' "$(MPI_SHOW)" | tr ' ' '\n' | grep '^-l')
+
+MPI_LIBDIR := $(shell printf '%s\n' "$(MPI_SHOW)" | tr ' ' '\n' | grep '^-L' | head -n1 | sed 's/^-L//')
+
+# =======================================================
 # DÉTECTION AUTOMATIQUE DES FLAGS HDF5
 # =======================================================
 
@@ -47,10 +61,16 @@ CXXFLAGS = -O3 \
 		   -I$(NUMERICS_DIR) \
 		   -I$(PHYSICS_DIR) \
 		   -I$(IO_DIR) \
+ 		   $(MPI_CFLAGS) \
            $(HDF5_CFLAGS)
 
 LDFLAGS = -fopenmp \
+		  $(MPI_LFLAGS) \
           $(HDF5_LFLAGS)
+
+ifneq ($(MPI_LIBDIR),)
+LDFLAGS += -Wl,-rpath,$(MPI_LIBDIR)
+endif
 
 ifneq ($(HDF5_LIBDIR),)
 LDFLAGS += -Wl,-rpath,$(HDF5_LIBDIR)
@@ -88,7 +108,7 @@ all: $(TARGET)
 # =======================================================
 
 $(TARGET): $(OBJ)
-	$(CXX) $(OBJ) $(LDFLAGS) $(HDF5_LIBS) -o $@
+	$(CXX) $(OBJ) $(LDFLAGS) $(HDF5_LIBS) $(MPI_LIBS) -o $@
 
 # =======================================================
 # RÈGLE DE COMPILATION : .cpp --> .o

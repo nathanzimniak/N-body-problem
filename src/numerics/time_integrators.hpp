@@ -15,7 +15,8 @@ void euler_explicit(
     RHSFunction rhs,
     State& U,
     double dt,
-    const Params& params
+    const Params& params,
+    const MPIContext& mpi_ctx
 );
 
 
@@ -31,5 +32,6 @@ void rk4(
     RHSFunction rhs,
     State& U,
     double dt,
-    const Params& params
+    const Params& params,
+    const MPIContext& mpi_ctx
 );

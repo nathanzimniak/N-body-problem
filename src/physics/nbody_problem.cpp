@@ -1,12 +1,13 @@
 #include "nbody_problem.hpp"
-
+#include <mpi.h>
 #include <omp.h>
 #include <cmath>
 
 
 State nbody_rhs(
     const State& U,
-    const Params& params
+    const Params& params,
+    const MPIContext& mpi_ctx
 ) {
     // Unpacking parameters.
     const double G = params.G;
@@ -24,11 +25,15 @@ State nbody_rhs(
                 .vy = std::vector<double>(N),
                 .vz = std::vector<double>(N)};
 
+    // Local range for this rank.
+    const int i_begin = mpi_ctx.displs[mpi_ctx.rank];
+    const int i_end   = i_begin + mpi_ctx.counts[mpi_ctx.rank];
+
 	// Create a team of threads and split the loop iterations among the threads.
     #pragma omp parallel for
     
     // Loop over each body to compute its time derivative.
-    for (std::size_t i = 0; i < N; ++i){
+    for (int i = i_begin; i < i_end; ++i) {
 
         // The time derivative of the position is the velocity.
         dUdt.x[i] = U.vx[i];
@@ -64,6 +69,14 @@ State nbody_rhs(
         dUdt.vy[i] = ay;
         dUdt.vz[i] = az; 
     }
+
+    // Rebuild full dUdt on every rank (sum of disjoint local contributions).
+    MPI_Allreduce(MPI_IN_PLACE, dUdt.x.data(),  static_cast<int>(N), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    MPI_Allreduce(MPI_IN_PLACE, dUdt.y.data(),  static_cast<int>(N), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    MPI_Allreduce(MPI_IN_PLACE, dUdt.z.data(),  static_cast<int>(N), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    MPI_Allreduce(MPI_IN_PLACE, dUdt.vx.data(), static_cast<int>(N), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    MPI_Allreduce(MPI_IN_PLACE, dUdt.vy.data(), static_cast<int>(N), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    MPI_Allreduce(MPI_IN_PLACE, dUdt.vz.data(), static_cast<int>(N), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 
     return dUdt;
 }

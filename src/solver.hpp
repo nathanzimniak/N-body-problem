@@ -28,10 +28,21 @@ struct Params {
 
 
 /**
+ * @brief Structure for the MPI context.
+ */
+struct MPIContext {
+    int rank;
+    int size;
+    std::vector<int> counts;
+    std::vector<int> displs;
+};
+
+
+/**
  * @brief Function pointer types for the RHS and integrator functions.
  */
-using RHSFunction = State (*)(const State&, const Params&);
-using Integrator = void (*)(RHSFunction, State&, double, const Params&);
+using RHSFunction = State (*)(const State&, const Params&, const MPIContext&);
+using Integrator = void (*)(RHSFunction, State&, double, const Params&, const MPIContext&);
 
 
 /**

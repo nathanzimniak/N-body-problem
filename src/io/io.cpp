@@ -1,5 +1,4 @@
 #include "io.hpp"
-
 #include <hdf5.h>
 #include <filesystem>
 #include <cstdio>

@@ -1,7 +1,6 @@
 #include "solver.hpp"
 #include "setups.hpp"
 #include "time_integrators.hpp"
-
 #include <cmath>
 #include <random>
 
@@ -23,7 +22,7 @@ static double random_double(
 Simulation setup_galaxy(
 ) {
     // Number of bodies.
-    const std::size_t n_bodies = 50000;
+    const std::size_t n_bodies = 1000;
 
     // Physical parameters.
     const double G = 1.0;                             // Gravitational constant.

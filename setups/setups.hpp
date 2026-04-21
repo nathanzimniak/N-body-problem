@@ -1,7 +1,6 @@
 #pragma once
 
 #include "solver.hpp"
-
 #include <functional>
 #include <string>
 #include <unordered_map>

@@ -13,5 +13,6 @@
  */
 State nbody_rhs(
     const State& U,
-    const Params& params
+    const Params& params,
+    const MPIContext& mpi_ctx
 );
