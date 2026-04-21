@@ -98,12 +98,12 @@ int run(
         double progress = (t - sim.time.t_start)/(sim.time.t_end - sim.time.t_start);
 
 	    if (rank == 0) {
-            // Display current iteration, progress, and elapsed time.
+            //// Display current iteration, progress, and elapsed time.
             std::cout << std::fixed
                       << "Iteration " << std::setw(6) << n
                       << " | Progress " << std::setprecision(1) << (100.0 * progress) << "%"
                       << " | Elapsed time " << std::setprecision(1) << elapsed << " s"
-                      << "\r" << std::flush;
+                      << "\n";
 
             // Save the simulation state at the configured frequency.
             if (n % sim.save.frequency == 0) {
@@ -119,11 +119,6 @@ int run(
         t += sim.time.dt;
         n++;
     }
-
-    // Print a final newline once (root process only) to end the progress line cleanly.
-	if (rank == 0) {
-        std::cout << std::endl;
-	}
     
     return 0;
 }
