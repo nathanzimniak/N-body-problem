@@ -1,2 +1,4 @@
 build/
+outputs/
+main
 batch.sh
