@@ -4,6 +4,7 @@
 #include "solver.hpp"
 
 #include <mpi.h>
+#include <omp.h>
 
 #include <iomanip>
 #include <iostream>

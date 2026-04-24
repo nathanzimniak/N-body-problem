@@ -19,7 +19,7 @@ static double random_double(double min, double max) {
 
 Simulation setup_galaxy() {
     // Total number of bodies in the simulation.
-    const int num_bodies = 1000;
+    const int num_bodies = 10000;
 
     // Physical parameters.
     const double gravitational_constant = 1.0;
