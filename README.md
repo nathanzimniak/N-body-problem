@@ -3,7 +3,7 @@
 <br>
 
 <p align="center">
-    A simple <strong>3D gravitational N-body solver</strong> based on <strong>direct force summation</strong> (brute-force).
+    A <strong>3D gravitational N-body solver</strong> based on <strong>direct force summation</strong> (brute-force).
     <br>
     Written in <strong>C++</strong> using the <strong>OpenMP</strong> API and the <strong>MPI</strong> library.
 </p>
