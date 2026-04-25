@@ -26,13 +26,9 @@ TARGET = main
 # =======================================================
 
 MPI_SHOW := $(shell mpicxx --showme:compile) $(shell mpicxx --showme:link)
-
 MPI_CFLAGS := $(shell printf '%s\n' "$(MPI_SHOW)" | tr ' ' '\n' | grep '^-I')
-
 MPI_LFLAGS := $(shell printf '%s\n' "$(MPI_SHOW)" | tr ' ' '\n' | grep '^-L')
-
 MPI_LIBS := $(shell printf '%s\n' "$(MPI_SHOW)" | tr ' ' '\n' | grep '^-l')
-
 MPI_LIBDIR := $(shell printf '%s\n' "$(MPI_SHOW)" | tr ' ' '\n' | grep '^-L' | head -n1 | sed 's/^-L//')
 
 # =======================================================
@@ -40,13 +36,9 @@ MPI_LIBDIR := $(shell printf '%s\n' "$(MPI_SHOW)" | tr ' ' '\n' | grep '^-L' | h
 # =======================================================
 
 HDF5_SHOW := $(shell h5c++ -show)
-
 HDF5_CFLAGS := $(shell printf '%s\n' "$(HDF5_SHOW)" | tr ' ' '\n' | grep '^-I')
-
 HDF5_LFLAGS := $(shell printf '%s\n' "$(HDF5_SHOW)" | tr ' ' '\n' | grep '^-L')
-
 HDF5_LIBS := $(shell printf '%s\n' "$(HDF5_SHOW)" | tr ' ' '\n' | grep -E '^-l|^/.+\.(a|so|so\.[0-9.]+|dylib)$$')
-
 HDF5_LIBDIR := $(shell printf '%s\n' "$(HDF5_SHOW)" | tr ' ' '\n' | grep '^-L' | head -n1 | sed 's/^-L//')
 
 # =======================================================
