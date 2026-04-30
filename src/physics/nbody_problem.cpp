@@ -32,13 +32,9 @@ State nbody_rhs(
         .vz = std::vector<double>(num_bodies)
     };
 
-    // Local index range handled by this MPI rank.
-    const int local_begin = mpi_context.displacements[mpi_context.rank];
-    const int local_end = local_begin + mpi_context.counts[mpi_context.rank];
-
-    // Distribute the local body loop across OpenMP threads.
+    // Cyclic distribution of bodies across MPI processes and parallelization over OpenMP threads.
     #pragma omp parallel for
-    for (int i = local_begin; i < local_end; i++) {
+    for (int i = mpi_context.rank; i < num_bodies; i += mpi_context.size) {
         // The time derivative of position is velocity.
         dUdt.x[i] = U.vx[i];
         dUdt.y[i] = U.vy[i];

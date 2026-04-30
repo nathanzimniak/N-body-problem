@@ -1,15 +1,10 @@
 #include "solver.hpp"
-
 #include <mpi.h>
-
 #include <iostream>
 #include <string>
 
 
-int main(
-    int argc,
-    char* argv[]
-) {
+int main(int argc, char* argv[]) {
     // Initialize the MPI execution environment.
     MPI_Init(&argc, &argv);
 

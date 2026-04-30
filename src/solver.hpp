@@ -32,8 +32,6 @@ struct Params {
 struct MPIContext {
     const int rank;
     const int size;
-    const std::vector<int> counts;
-    const std::vector<int> displacements;
 };
 
 

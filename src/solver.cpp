@@ -31,10 +31,10 @@ int run(const std::string& setup_name) {
     const double start_wtime = MPI_Wtime();
 
     // Get total number of processes and current process rank.
-    int num_proc;
-    int rank_proc;
-    MPI_Comm_size(MPI_COMM_WORLD, &num_proc);
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank_proc);
+    int mpi_size;
+    int mpi_rank;
+    MPI_Comm_size(MPI_COMM_WORLD, &mpi_size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
 
     // Find the requested simulation setup in the global registry.
     auto& registry = setup_registry();
@@ -42,7 +42,7 @@ int run(const std::string& setup_name) {
 
     // Stop if the setup name is not registered.
     if (setup_iterator == registry.end()) {
-        if (rank_proc == 0) {
+        if (mpi_rank == 0) {
             std::cerr << "Unknown setup: " << setup_name << '\n';
         }
         return 1;
@@ -55,25 +55,10 @@ int run(const std::string& setup_name) {
     // Total number of bodies in the simulation.
     const int num_bodies = sim.state.x.size();
 
-    // Number of bodies handled by each process.
-    std::vector<int> counts(num_proc);
-    for (int rank = 0; rank < num_proc; ++rank) {
-        counts[rank] = num_bodies / num_proc + (rank < (num_bodies % num_proc) ? 1 : 0);
-    }
-
-    // Starting index (offset) of each process's data in the global array.
-    std::vector<int> displacements(num_proc);
-    displacements[0] = 0;
-    for (int rank = 1; rank < num_proc; ++rank) {
-        displacements[rank] = displacements[rank - 1] + counts[rank - 1];
-    }
-
     // MPI distribution metadata for domain decomposition.
     const MPIContext mpi_context{
-        .rank = rank_proc,
-        .size = num_proc,
-        .counts = counts,
-        .displacements = displacements
+        .rank = mpi_rank,
+        .size = mpi_size
     };
 
     // Simulation time and iteration counter.
@@ -87,11 +72,11 @@ int run(const std::string& setup_name) {
         const double elapsed_wtime = current_wtime - start_wtime;
         const double progress = (current_time - sim.time.start)/(sim.time.end - sim.time.start);
     
-        if (rank_proc == 0) {
+        if (mpi_rank == 0) {
             // Display current iteration, progress, and elapsed wall-clock time.
             std::cout << std::fixed
                       << "Iteration " << std::setw(6) << current_step
-                      << " | Progress " << std::setprecision(1) << (100.0 * progress) << "%"
+                      << " | Progress " << std::setprecision(1) << (100.0*progress) << "%"
                       << " | Elapsed time " << std::setprecision(1) << elapsed_wtime << " s"
                       << '\n';
 
@@ -108,6 +93,6 @@ int run(const std::string& setup_name) {
         current_time += sim.time.step;
         current_step++;
     }
-    
+
     return 0;
 }

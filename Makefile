@@ -8,12 +8,12 @@ CXX = g++-15
 # ORGANISATION DES DOSSIERS
 # =======================================================
 
-SRC_DIR = src
-OBJ_DIR = build
-SETUPS_DIR = setups
-NUMERICS_DIR = $(SRC_DIR)/numerics
-PHYSICS_DIR = $(SRC_DIR)/physics
-IO_DIR = $(SRC_DIR)/io
+DIR_SRC = src
+DIR_OBJ = build
+DIR_SETUPS = setups
+DIR_NUMERICS = $(DIR_SRC)/numerics
+DIR_PHYSICS = $(DIR_SRC)/physics
+DIR_IO = $(DIR_SRC)/io
 
 # =======================================================
 # INFORMATIONS GÉNÉRALES SUR LA COMPILATION
@@ -25,21 +25,21 @@ TARGET = main
 # DÉTECTION AUTOMATIQUE DES FLAGS MPI
 # =======================================================
 
-MPI_SHOW := $(shell mpicxx --showme:compile) $(shell mpicxx --showme:link)
-MPI_CFLAGS := $(shell printf '%s\n' "$(MPI_SHOW)" | tr ' ' '\n' | grep '^-I')
-MPI_LFLAGS := $(shell printf '%s\n' "$(MPI_SHOW)" | tr ' ' '\n' | grep '^-L')
-MPI_LIBS := $(shell printf '%s\n' "$(MPI_SHOW)" | tr ' ' '\n' | grep '^-l')
-MPI_LIBDIR := $(shell printf '%s\n' "$(MPI_SHOW)" | tr ' ' '\n' | grep '^-L' | head -n1 | sed 's/^-L//')
+SHOW_MPI := $(shell mpicxx --showme:compile) $(shell mpicxx --showme:link)
+CFLAGS_MPI := $(shell printf '%s\n' "$(SHOW_MPI)" | tr ' ' '\n' | grep '^-I')
+LFLAGS_MPI := $(shell printf '%s\n' "$(SHOW_MPI)" | tr ' ' '\n' | grep '^-L')
+LIBS_MPI := $(shell printf '%s\n' "$(SHOW_MPI)" | tr ' ' '\n' | grep '^-l')
+LIBDIR_MPI := $(shell printf '%s\n' "$(SHOW_MPI)" | tr ' ' '\n' | grep '^-L' | head -n1 | sed 's/^-L//')
 
 # =======================================================
 # DÉTECTION AUTOMATIQUE DES FLAGS HDF5
 # =======================================================
 
-HDF5_SHOW := $(shell h5c++ -show)
-HDF5_CFLAGS := $(shell printf '%s\n' "$(HDF5_SHOW)" | tr ' ' '\n' | grep '^-I')
-HDF5_LFLAGS := $(shell printf '%s\n' "$(HDF5_SHOW)" | tr ' ' '\n' | grep '^-L')
-HDF5_LIBS := $(shell printf '%s\n' "$(HDF5_SHOW)" | tr ' ' '\n' | grep -E '^-l|^/.+\.(a|so|so\.[0-9.]+|dylib)$$')
-HDF5_LIBDIR := $(shell printf '%s\n' "$(HDF5_SHOW)" | tr ' ' '\n' | grep '^-L' | head -n1 | sed 's/^-L//')
+SHOW_HDF5 := $(shell h5c++ -show)
+CFLAGS_HDF5 := $(shell printf '%s\n' "$(SHOW_HDF5)" | tr ' ' '\n' | grep '^-I')
+LFLAGS_HDF5 := $(shell printf '%s\n' "$(SHOW_HDF5)" | tr ' ' '\n' | grep '^-L')
+LIBS_HDF5 := $(shell printf '%s\n' "$(SHOW_HDF5)" | tr ' ' '\n' | grep -E '^-l|^/.+\.(a|so|so\.[0-9.]+|dylib)$$')
+LIBDIR_HDF5 := $(shell printf '%s\n' "$(SHOW_HDF5)" | tr ' ' '\n' | grep '^-L' | head -n1 | sed 's/^-L//')
 
 # =======================================================
 # OPTIONS DE COMPILATION
@@ -48,24 +48,24 @@ HDF5_LIBDIR := $(shell printf '%s\n' "$(HDF5_SHOW)" | tr ' ' '\n' | grep '^-L' |
 CXXFLAGS = -O3 \
            -std=c++20 \
            -fopenmp \
-		   -I$(SRC_DIR) \
-		   -I$(SETUPS_DIR) \
-		   -I$(NUMERICS_DIR) \
-		   -I$(PHYSICS_DIR) \
-		   -I$(IO_DIR) \
- 		   $(MPI_CFLAGS) \
-           $(HDF5_CFLAGS)
+		   -I$(DIR_SRC) \
+		   -I$(DIR_SETUPS) \
+		   -I$(DIR_NUMERICS) \
+		   -I$(DIR_PHYSICS) \
+		   -I$(DIR_IO) \
+ 		   $(CFLAGS_MPI) \
+           $(CFLAGS_HDF5)
 
 LDFLAGS = -fopenmp \
-		  $(MPI_LFLAGS) \
-          $(HDF5_LFLAGS)
+		  $(LFLAGS_MPI) \
+          $(LFLAGS_HDF5)
 
-ifneq ($(MPI_LIBDIR),)
-LDFLAGS += -Wl,-rpath,$(MPI_LIBDIR)
+ifneq ($(LIBDIR_MPI),)
+LDFLAGS += -Wl,-rpath,$(LIBDIR_MPI)
 endif
 
-ifneq ($(HDF5_LIBDIR),)
-LDFLAGS += -Wl,-rpath,$(HDF5_LIBDIR)
+ifneq ($(LIBDIR_HDF5),)
+LDFLAGS += -Wl,-rpath,$(LIBDIR_HDF5)
 endif
 
 # =======================================================
@@ -73,11 +73,11 @@ endif
 # =======================================================
 
 SRC_MAIN = main.cpp \
-		   $(SRC_DIR)/solver.cpp \
-		   $(wildcard $(SETUPS_DIR)/*.cpp) \
-		   $(wildcard $(NUMERICS_DIR)/*.cpp) \
-		   $(wildcard $(PHYSICS_DIR)/*.cpp) \
-		   $(wildcard $(IO_DIR)/*.cpp)
+		   $(DIR_SRC)/solver.cpp \
+		   $(wildcard $(DIR_SETUPS)/*.cpp) \
+		   $(wildcard $(DIR_NUMERICS)/*.cpp) \
+		   $(wildcard $(DIR_PHYSICS)/*.cpp) \
+		   $(wildcard $(DIR_IO)/*.cpp)
 
 SRC = $(SRC_MAIN)
 
@@ -85,7 +85,7 @@ SRC = $(SRC_MAIN)
 # LISTE DES FICHIERS OBJETS
 # =======================================================
 
-OBJ = $(SRC:%.cpp=$(OBJ_DIR)/%.o)
+OBJ = $(SRC:%.cpp=$(DIR_OBJ)/%.o)
 
 # =======================================================
 # CIBLES UTILITAIRES
@@ -100,13 +100,13 @@ all: $(TARGET)
 # =======================================================
 
 $(TARGET): $(OBJ)
-	$(CXX) $(OBJ) $(LDFLAGS) $(HDF5_LIBS) $(MPI_LIBS) -o $@
+	$(CXX) $(OBJ) $(LDFLAGS) $(LIBS_HDF5) $(LIBS_MPI) -o $@
 
 # =======================================================
 # RÈGLE DE COMPILATION : .cpp --> .o
 # =======================================================
 
-$(OBJ_DIR)/%.o: %.cpp
+$(DIR_OBJ)/%.o: %.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
 
@@ -117,4 +117,4 @@ $(OBJ_DIR)/%.o: %.cpp
 -include $(OBJ:.o=.d)
 
 clean:
-	rm -rf $(TARGET) $(OBJ_DIR)
+	rm -rf $(TARGET) $(DIR_OBJ)
